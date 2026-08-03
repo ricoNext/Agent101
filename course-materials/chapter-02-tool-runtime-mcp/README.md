@@ -17,10 +17,10 @@
 
 ## 课程目录
 
-1. [第 1 课：理解工具调用的边界](./第01课-理解工具调用的边界.md)
-2. [第 2 课：定义工具、调用和审计协议](./第02课-定义工具、调用和审计协议.md)
-3. [第 3 课：实现 Tool Registry](./第03课-实现 Tool Registry.md)
-4. [第 4 课：实现权限、审批、超时和审计](./第04课-实现权限、审批、超时和审计.md)
-5. [第 5 课：测试 Tool Runtime](./第05课-测试 Tool Runtime.md)
-6. [第 6 课：创建工具管理和审批页面](./第06课-创建工具管理和审批页面.md)
-7. [第 7 课：最小 MCP Server 选修实验](./第07课-最小 MCP Server 选修实验.md)
+1. [第 1 课：理解工具调用的边界](./lesson-01-tool-call-boundaries.md)
+2. [第 2 课：定义工具、调用和审计协议](./lesson-02-tool-call-audit-protocol.md)
+3. [第 3 课：实现 Tool Registry](./lesson-03-tool-registry.md)
+4. [第 4 课：实现权限、审批、超时和审计](./lesson-04-permission-approval-timeout-audit.md)
+5. [第 5 课：测试 Tool Runtime](./lesson-05-test-tool-runtime.md)
+6. [第 6 课：创建工具管理和审批页面](./lesson-06-tool-management-approval-page.md)
+7. [第 7 课：最小 MCP Server 选修实验](./lesson-07-mcp-server-experiment.md)

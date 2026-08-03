@@ -58,14 +58,14 @@ agent-platform/
 
 | 章节 | 课程数 | 入口 |
 |------|--------|------|
-| 第 1 章：LLM Gateway | 7 | [进入本章](./第01章-LLM-Gateway/README.md) |
-| 第 2 章：Tool Runtime 与 MCP | 7 | [进入本章](./第02章-Tool-Runtime与MCP/README.md) |
-| 第 3 章：Agent Loop 与 Codebase Agent | 7 | [进入本章](./第03章-Agent-Loop与Codebase-Agent/README.md) |
-| 第 4 章：Context、Memory 与 Codebase RAG | 6 | [进入本章](./第04章-Context-Memory与Codebase-RAG/README.md) |
-| 第 5 章：Multi-Agent、Skill 与 A2A | 7 | [进入本章](./第05章-Multi-Agent与A2A/README.md) |
-| 第 6 章：Agent Eval | 6 | [进入本章](./第06章-Agent-Eval/README.md) |
-| 第 7 章：生产工程与 FinOps | 6 | [进入本章](./第07章-生产工程与FinOps/README.md) |
-| 第 8 章：合规与治理 | 6 | [进入本章](./第08章-合规与治理/README.md) |
-| 第 9 章：综合项目与作品集 | 5 | [进入本章](./第09章-综合项目与作品集/README.md) |
+| 第 1 章：LLM Gateway | 7 | [进入本章](./chapter-01-llm-gateway/README.md) |
+| 第 2 章：Tool Runtime 与 MCP | 7 | [进入本章](./chapter-02-tool-runtime-mcp/README.md) |
+| 第 3 章：Agent Loop 与 Codebase Agent | 7 | [进入本章](./chapter-03-agent-loop-codebase-agent/README.md) |
+| 第 4 章：Context、Memory 与 Codebase RAG | 6 | [进入本章](./chapter-04-context-memory-codebase-rag/README.md) |
+| 第 5 章：Multi-Agent、Skill 与 A2A | 7 | [进入本章](./chapter-05-multi-agent-a2a/README.md) |
+| 第 6 章：Agent Eval | 6 | [进入本章](./chapter-06-agent-eval/README.md) |
+| 第 7 章：生产工程与 FinOps | 6 | [进入本章](./chapter-07-production-finops/README.md) |
+| 第 8 章：合规与治理 | 6 | [进入本章](./chapter-08-compliance-governance/README.md) |
+| 第 9 章：综合项目与作品集 | 5 | [进入本章](./chapter-09-comprehensive-project-portfolio/README.md) |
 
 后续章节将沿用第一章的目录、命名和事件协议；不要自行改动 `run_id`、事件名和 API 路径，除非讲义明确要求。

@@ -38,3 +38,4 @@ credentials.json
 logs/
 
 .codebuddy/
+.workbuddy/
