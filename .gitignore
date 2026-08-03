@@ -36,3 +36,7 @@ credentials.json
 # Logs
 *.log
 logs/
+
+# Large / derived assets
+AI Agent 全栈工程师训练营 课程大纲（在线PDF提取版）.pdf
+*.pdf
