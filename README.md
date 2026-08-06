@@ -38,91 +38,91 @@
 
 > 安全发现和调用工具。先让工具能被安全执行，模型工具选择在第三章接入。
 
-1. [第 1 课：理解工具调用的边界](./chapter-02-tool-runtime-mcp/lesson-08-tool-call-boundaries.md)
-2. [第 2 课：定义工具、调用和审计协议](./chapter-02-tool-runtime-mcp/lesson-09-tool-call-audit-protocol.md)
-3. [第 3 课：实现 Tool Registry](./chapter-02-tool-runtime-mcp/lesson-10-tool-registry.md)
-4. [第 4 课：实现权限、审批、超时和审计](./chapter-02-tool-runtime-mcp/lesson-11-permission-approval-timeout-audit.md)
-5. [第 5 课：测试 Tool Runtime](./chapter-02-tool-runtime-mcp/lesson-12-test-tool-runtime.md)
-6. [第 6 课：创建工具管理和审批页面](./chapter-02-tool-runtime-mcp/lesson-13-tool-management-approval-page.md)
-7. [第 7 课：最小 MCP Server 选修实验](./chapter-02-tool-runtime-mcp/lesson-14-mcp-server-experiment.md)
+1. [第 8 课：理解工具调用的边界](./chapter-02-tool-runtime-mcp/lesson-08-tool-call-boundaries.md)
+2. [第 9 课：定义工具、调用和审计协议](./chapter-02-tool-runtime-mcp/lesson-09-tool-call-audit-protocol.md)
+3. [第 10 课：实现 Tool Registry](./chapter-02-tool-runtime-mcp/lesson-10-tool-registry.md)
+4. [第 11 课：实现权限、审批、超时和审计](./chapter-02-tool-runtime-mcp/lesson-11-permission-approval-timeout-audit.md)
+5. [第 12 课：测试 Tool Runtime](./chapter-02-tool-runtime-mcp/lesson-12-test-tool-runtime.md)
+6. [第 13 课：创建工具管理和审批页面](./chapter-02-tool-runtime-mcp/lesson-13-tool-management-approval-page.md)
+7. [第 14 课：最小 MCP Server 选修实验](./chapter-02-tool-runtime-mcp/lesson-14-mcp-server-experiment.md)
 
 ### [第三章：实现可恢复的 Agent Loop 与 Codebase Agent](./chapter-03-agent-loop-codebase-agent/README.md)
 
 > 多步任务执行、暂停、恢复和代码修改。从 Scripted Decider 开始，最后才接入真实模型。
 
-1. [第 1 课：把「对话」变成「任务」](./chapter-03-agent-loop-codebase-agent/lesson-15-turn-conversation-into-tasks.md)
-2. [第 2 课：保存任务和 Checkpoint](./chapter-03-agent-loop-codebase-agent/lesson-16-save-tasks-checkpoint.md)
-3. [第 3 课：定义 Agent Decision 并实现 Scripted Decider](./chapter-03-agent-loop-codebase-agent/lesson-17-agent-decision-scripted-decider.md)
-4. [第 4 课：实现最小 Agent Loop](./chapter-03-agent-loop-codebase-agent/lesson-18-minimal-agent-loop.md)
-5. [第 5 课：审批、取消和恢复](./chapter-03-agent-loop-codebase-agent/lesson-19-approval-cancel-resume.md)
-6. [第 6 课：构建受限 Codebase 工具和 Sandbox](./chapter-03-agent-loop-codebase-agent/lesson-20-codebase-tools-sandbox.md)
-7. [第 7 课：接入真实模型决策和任务工作台](./chapter-03-agent-loop-codebase-agent/lesson-21-real-model-decision-workbench.md)
+1. [第 15 课：把「对话」变成「任务」](./chapter-03-agent-loop-codebase-agent/lesson-15-turn-conversation-into-tasks.md)
+2. [第 16 课：保存任务和 Checkpoint](./chapter-03-agent-loop-codebase-agent/lesson-16-save-tasks-checkpoint.md)
+3. [第 17 课：定义 Agent Decision 并实现 Scripted Decider](./chapter-03-agent-loop-codebase-agent/lesson-17-agent-decision-scripted-decider.md)
+4. [第 18 课：实现最小 Agent Loop](./chapter-03-agent-loop-codebase-agent/lesson-18-minimal-agent-loop.md)
+5. [第 19 课：审批、取消和恢复](./chapter-03-agent-loop-codebase-agent/lesson-19-approval-cancel-resume.md)
+6. [第 20 课：构建受限 Codebase 工具和 Sandbox](./chapter-03-agent-loop-codebase-agent/lesson-20-codebase-tools-sandbox.md)
+7. [第 21 课：接入真实模型决策和任务工作台](./chapter-03-agent-loop-codebase-agent/lesson-21-real-model-decision-workbench.md)
 
 ### [第四章：Context、Memory 与 Codebase RAG](./chapter-04-context-memory-codebase-rag/README.md)
 
 > 检索代码和文档，管理项目记忆。让 Agent 在有限上下文内找到能支持结论的代码证据。
 
-1. [第 1 课：先量化 Context，而不是盲目压缩](./chapter-04-context-memory-codebase-rag/lesson-22-context-quantification.md)
-2. [第 2 课：把代码和文档解析成可引用的 Chunk](./chapter-04-context-memory-codebase-rag/lesson-23-code-doc-chunk.md)
-3. [第 3 课：先实现可解释的关键词检索](./chapter-04-context-memory-codebase-rag/lesson-24-explainable-keyword-search.md)
-4. [第 4 课：接入 Embedding、Hybrid Search 和 Rerank](./chapter-04-context-memory-codebase-rag/lesson-25-embedding-hybrid-search-rerank.md)
-5. [第 5 课：项目记忆与 Context Builder 集成](./chapter-04-context-memory-codebase-rag/lesson-26-project-memory-context-builder.md)
-6. [第 6 课：创建代码知识页面和 RAG 对照实验](./chapter-04-context-memory-codebase-rag/lesson-27-code-knowledge-rag-experiment.md)
+1. [第 22 课：先量化 Context，而不是盲目压缩](./chapter-04-context-memory-codebase-rag/lesson-22-context-quantification.md)
+2. [第 23 课：把代码和文档解析成可引用的 Chunk](./chapter-04-context-memory-codebase-rag/lesson-23-code-doc-chunk.md)
+3. [第 24 课：先实现可解释的关键词检索](./chapter-04-context-memory-codebase-rag/lesson-24-explainable-keyword-search.md)
+4. [第 25 课：接入 Embedding、Hybrid Search 和 Rerank](./chapter-04-context-memory-codebase-rag/lesson-25-embedding-hybrid-search-rerank.md)
+5. [第 26 课：项目记忆与 Context Builder 集成](./chapter-04-context-memory-codebase-rag/lesson-26-project-memory-context-builder.md)
+6. [第 27 课：创建代码知识页面和 RAG 对照实验](./chapter-04-context-memory-codebase-rag/lesson-27-code-knowledge-rag-experiment.md)
 
 ### [第五章：Multi-Agent、Skill 与 A2A](./chapter-05-multi-agent-a2a/README.md)
 
 > 多个 Agent 分工协作。先问“是否应该多 Agent”，再写协作代码。
 
-1. [第 1 课：判断是否需要 Multi-Agent](./chapter-05-multi-agent-a2a/lesson-28-determine-need-multi-agent.md)
-2. [第 2 课：定义 Subtask 和结果协议](./chapter-05-multi-agent-a2a/lesson-29-subtask-result-protocol.md)
-3. [第 3 课：实现并行 Supervisor](./chapter-05-multi-agent-a2a/lesson-30-parallel-supervisor.md)
-4. [第 4 课：结果聚合、冲突和 Reviewer](./chapter-05-multi-agent-a2a/lesson-31-result-aggregation-conflict-reviewer.md)
-5. [第 5 课：把重复任务封装为 Skill](./chapter-05-multi-agent-a2a/lesson-32-skill-encapsulation.md)
-6. [第 6 课：A2A 选修实验](./chapter-05-multi-agent-a2a/lesson-33-a2a-experiment.md)
-7. [第 7 课：创建协作任务页并完成验收](./chapter-05-multi-agent-a2a/lesson-34-collaboration-page-acceptance.md)
+1. [第 28 课：判断是否需要 Multi-Agent](./chapter-05-multi-agent-a2a/lesson-28-determine-need-multi-agent.md)
+2. [第 29 课：定义 Subtask 和结果协议](./chapter-05-multi-agent-a2a/lesson-29-subtask-result-protocol.md)
+3. [第 30 课：实现并行 Supervisor](./chapter-05-multi-agent-a2a/lesson-30-parallel-supervisor.md)
+4. [第 31 课：结果聚合、冲突和 Reviewer](./chapter-05-multi-agent-a2a/lesson-31-result-aggregation-conflict-reviewer.md)
+5. [第 32 课：把重复任务封装为 Skill](./chapter-05-multi-agent-a2a/lesson-32-skill-encapsulation.md)
+6. [第 33 课：A2A 选修实验](./chapter-05-multi-agent-a2a/lesson-33-a2a-experiment.md)
+7. [第 34 课：创建协作任务页并完成验收](./chapter-05-multi-agent-a2a/lesson-34-collaboration-page-acceptance.md)
 
 ### [第六章：Agent Eval、回归测试与质量改进](./chapter-06-agent-eval/README.md)
 
 > 用数据证明 Agent 是否变好了。不再只能说「这次 Demo 看起来不错」。
 
-1. [第 1 课：建立 Golden Dataset](./chapter-06-agent-eval/lesson-35-golden-dataset.md)
-2. [第 2 课：实现规则评测器](./chapter-06-agent-eval/lesson-36-rule-evaluator.md)
-3. [第 3 课：保存 Trace 并定位失败步骤](./chapter-06-agent-eval/lesson-37-trace-failure-location.md)
-4. [第 4 课：谨慎使用 LLM-as-Judge](./chapter-06-agent-eval/lesson-38-llm-as-judge.md)
-5. [第 5 课：回归测试和版本对比](./chapter-06-agent-eval/lesson-39-regression-test-version-compare.md)
-6. [第 6 课：创建 Eval Dashboard 和自动化入口](./chapter-06-agent-eval/lesson-40-eval-dashboard-automation.md)
+1. [第 35 课：建立 Golden Dataset](./chapter-06-agent-eval/lesson-35-golden-dataset.md)
+2. [第 36 课：实现规则评测器](./chapter-06-agent-eval/lesson-36-rule-evaluator.md)
+3. [第 37 课：保存 Trace 并定位失败步骤](./chapter-06-agent-eval/lesson-37-trace-failure-location.md)
+4. [第 38 课：谨慎使用 LLM-as-Judge](./chapter-06-agent-eval/lesson-38-llm-as-judge.md)
+5. [第 39 课：回归测试和版本对比](./chapter-06-agent-eval/lesson-39-regression-test-version-compare.md)
+6. [第 40 课：创建 Eval Dashboard 和自动化入口](./chapter-06-agent-eval/lesson-40-eval-dashboard-automation.md)
 
 ### [第七章：生产工程、可观测性与 FinOps](./chapter-07-production-finops/README.md)
 
 > 部署、监控、成本控制和回滚。把本机项目变成可重复部署的服务。
 
-1. [第 1 课：把本地依赖写成 Docker Compose](./chapter-07-production-finops/lesson-41-docker-compose-deps.md)
-2. [第 2 课：配置、密钥和健康检查](./chapter-07-production-finops/lesson-42-config-secrets-healthcheck.md)
-3. [第 3 课：结构化日志、Trace 和 Replay](./chapter-07-production-finops/lesson-43-structured-logs-trace-replay.md)
-4. [第 4 课：建立 Token 预算和 FinOps 报表](./chapter-07-production-finops/lesson-44-token-budget-finops-report.md)
-5. [第 5 课：版本、灰度和回滚](./chapter-07-production-finops/lesson-45-version-canary-rollback.md)
-6. [第 6 课：运维治理台和本章验收](./chapter-07-production-finops/lesson-46-ops-governance-acceptance.md)
+1. [第 41 课：把本地依赖写成 Docker Compose](./chapter-07-production-finops/lesson-41-docker-compose-deps.md)
+2. [第 42 课：配置、密钥和健康检查](./chapter-07-production-finops/lesson-42-config-secrets-healthcheck.md)
+3. [第 43 课：结构化日志、Trace 和 Replay](./chapter-07-production-finops/lesson-43-structured-logs-trace-replay.md)
+4. [第 44 课：建立 Token 预算和 FinOps 报表](./chapter-07-production-finops/lesson-44-token-budget-finops-report.md)
+5. [第 45 课：版本、灰度和回滚](./chapter-07-production-finops/lesson-45-version-canary-rollback.md)
+6. [第 46 课：运维治理台和本章验收](./chapter-07-production-finops/lesson-46-ops-governance-acceptance.md)
 
 ### [第八章：身份、审批、审计与治理](./chapter-08-compliance-governance/README.md)
 
 > 身份、权限、审计、脱敏和人工监督。把风险要求翻译成可实现的工程控制。
 
-1. [第 1 课：从风险矩阵开始，而不是从法规名词开始](./chapter-08-compliance-governance/lesson-47-risk-matrix.md)
-2. [第 2 课：分开用户、Agent 和工具身份](./chapter-08-compliance-governance/lesson-48-identity-separation.md)
-3. [第 3 课：实现持久化审批单](./chapter-08-compliance-governance/lesson-49-persistent-approval.md)
-4. [第 4 课：数据脱敏、隔离和审计](./chapter-08-compliance-governance/lesson-50-data-masking-isolation-audit.md)
-5. [第 5 课：Human-in-the-loop 和 Kill Switch](./chapter-08-compliance-governance/lesson-51-human-in-loop-kill-switch.md)
-6. [第 6 课：合规与审计页面、本章验收](./chapter-08-compliance-governance/lesson-52-compliance-audit-page-acceptance.md)
+1. [第 47 课：从风险矩阵开始，而不是从法规名词开始](./chapter-08-compliance-governance/lesson-47-risk-matrix.md)
+2. [第 48 课：分开用户、Agent 和工具身份](./chapter-08-compliance-governance/lesson-48-identity-separation.md)
+3. [第 49 课：实现持久化审批单](./chapter-08-compliance-governance/lesson-49-persistent-approval.md)
+4. [第 50 课：数据脱敏、隔离和审计](./chapter-08-compliance-governance/lesson-50-data-masking-isolation-audit.md)
+5. [第 51 课：Human-in-the-loop 和 Kill Switch](./chapter-08-compliance-governance/lesson-51-human-in-loop-kill-switch.md)
+6. [第 52 课：合规与审计页面、本章验收](./chapter-08-compliance-governance/lesson-52-compliance-audit-page-acceptance.md)
 
 ### [第九章：完成一个可展示的全栈 Agent 产品](./chapter-09-comprehensive-project-portfolio/README.md)
 
 > 从已有能力中选一个真实场景，冻结范围、交付产品、部署演示和答辩。
 
-1. [第 1 课：写一页产品需求](./chapter-09-comprehensive-project-portfolio/lesson-53-product-requirements.md)
-2. [第 2 课：冻结架构和核心任务](./chapter-09-comprehensive-project-portfolio/lesson-54-architecture-core-tasks.md)
-3. [第 3 课：完成全栈用户流程](./chapter-09-comprehensive-project-portfolio/lesson-55-fullstack-user-flow.md)
-4. [第 4 课：做一次真实的质量改进](./chapter-09-comprehensive-project-portfolio/lesson-56-quality-improvement.md)
-5. [第 5 课：部署、演示与答辩](./chapter-09-comprehensive-project-portfolio/lesson-57-deploy-demo-defense.md)
+1. [第 53 课：写一页产品需求](./chapter-09-comprehensive-project-portfolio/lesson-53-product-requirements.md)
+2. [第 54 课：冻结架构和核心任务](./chapter-09-comprehensive-project-portfolio/lesson-54-architecture-core-tasks.md)
+3. [第 55 课：完成全栈用户流程](./chapter-09-comprehensive-project-portfolio/lesson-55-fullstack-user-flow.md)
+4. [第 56 课：做一次真实的质量改进](./chapter-09-comprehensive-project-portfolio/lesson-56-quality-improvement.md)
+5. [第 57 课：部署、演示与答辩](./chapter-09-comprehensive-project-portfolio/lesson-57-deploy-demo-defense.md)
 
 ---
 
@@ -152,17 +152,15 @@
 
 | 分支 | 内容 | 说明 |
 |------|------|------|
-| `chapter-00-init` | 初始骨架 | 健康检查 + 项目结构，从零开始的起点 |
-| `chapter-01` ~ `chapter-09` | 各章代码（完成态） | 切换到对应分支即可获得该阶段完整代码 |
+| `chapter-xx` | 各章代码（完成态） | 切换到对应分支即可获得该阶段完整代码 |
 
 ```bash
 # 克隆代码仓库
 git clone https://github.com/ricoNext/agent-platform.git
 
 # 从初始骨架开始
-git checkout chapter-00-init
 
-# 查看第 1 章完整代码
+# 查看第 1 章节 第1课完整代码
 git checkout chapter-01
 ```
 

@@ -17,10 +17,10 @@
 
 ## 课程目录
 
-1. [第 1 课：把"对话"变成"任务"](./lesson-15-turn-conversation-into-tasks.md)
-2. [第 2 课：保存任务和 Checkpoint](./lesson-16-save-tasks-checkpoint.md)
-3. [第 3 课：定义 Agent Decision 并实现 Scripted Decider](./lesson-17-agent-decision-scripted-decider.md)
-4. [第 4 课：实现最小 Agent Loop](./lesson-18-minimal-agent-loop.md)
-5. [第 5 课：审批、取消和恢复](./lesson-19-approval-cancel-resume.md)
-6. [第 6 课：构建受限 Codebase 工具和 Sandbox](./lesson-20-codebase-tools-sandbox.md)
-7. [第 7 课：接入真实模型决策和任务工作台](./lesson-21-real-model-decision-workbench.md)
+1. [第 15 课：把"对话"变成"任务"](./lesson-15-turn-conversation-into-tasks.md)
+2. [第 16 课：保存任务和 Checkpoint](./lesson-16-save-tasks-checkpoint.md)
+3. [第 17 课：定义 Agent Decision 并实现 Scripted Decider](./lesson-17-agent-decision-scripted-decider.md)
+4. [第 18 课：实现最小 Agent Loop](./lesson-18-minimal-agent-loop.md)
+5. [第 19 课：审批、取消和恢复](./lesson-19-approval-cancel-resume.md)
+6. [第 20 课：构建受限 Codebase 工具和 Sandbox](./lesson-20-codebase-tools-sandbox.md)
+7. [第 21 课：接入真实模型决策和任务工作台](./lesson-21-real-model-decision-workbench.md)
