@@ -1,8 +1,8 @@
 # 第 5 课：项目记忆与 Context Builder 集成
 
-> 所属章节：[第 4 章：Context、Memory 与 Codebase RAG](./README.md)  
-> 上一课：[第 4 课：接入 Embedding、Hybrid Search 和 Rerank](./第04课-接入 Embedding、Hybrid Search 和 Rerank.md)  
-> 下一课：[第 6 课：创建代码知识页面和 RAG 对照实验](./第06课-创建代码知识页面和 RAG 对照实验.md)
+> 所属章节：[第 4 章：Context、Memory 与 Codebase RAG](./index.md)  
+> 上一课：[第 4 课：接入 Embedding、Hybrid Search 和 Rerank](./lesson-25-embedding-hybrid-search-rerank.md)  
+> 下一课：[第 6 课：创建代码知识页面和 RAG 对照实验](./lesson-27-code-knowledge-rag-experiment.md)
 
 ### 你将完成什么
 

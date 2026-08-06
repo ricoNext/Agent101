@@ -1,8 +1,8 @@
 # 第 2 课：配置、密钥和健康检查
 
-> 所属章节：[第 7 章：生产工程、可观测性与 FinOps](./README.md)  
-> 上一课：[第 1 课：把本地依赖写成 Docker Compose](./第01课-把本地依赖写成 Docker Compose.md)  
-> 下一课：[第 3 课：结构化日志、Trace 和 Replay](./第03课-结构化日志、Trace 和 Replay.md)
+> 所属章节：[第 7 章：生产工程、可观测性与 FinOps](./index.md)  
+> 上一课：[第 1 课：把本地依赖写成 Docker Compose](./lesson-41-docker-compose-deps.md)  
+> 下一课：[第 3 课：结构化日志、Trace 和 Replay](./lesson-43-structured-logs-trace-replay.md)
 
 ### 你将完成什么
 

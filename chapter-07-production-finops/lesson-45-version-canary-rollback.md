@@ -1,8 +1,8 @@
 # 第 5 课：版本、灰度和回滚
 
-> 所属章节：[第 7 章：生产工程、可观测性与 FinOps](./README.md)  
-> 上一课：[第 4 课：建立 Token 预算和 FinOps 报表](./第04课-建立 Token 预算和 FinOps 报表.md)  
-> 下一课：[第 6 课：运维治理台和本章验收](./第06课-运维治理台和本章验收.md)
+> 所属章节：[第 7 章：生产工程、可观测性与 FinOps](./index.md)  
+> 上一课：[第 4 课：建立 Token 预算和 FinOps 报表](./lesson-44-token-budget-finops-report.md)  
+> 下一课：[第 6 课：运维治理台和本章验收](./lesson-46-ops-governance-acceptance.md)
 
 ### 你将完成什么
 

@@ -50,7 +50,7 @@ Windows PowerShell 请使用：
 
 ```text
 fastapi==0.141.1
-uvicorn[standard]==0.52.0
+uvicorn[standard]==0.52.1
 httpx==0.28.1
 httpx2==2.9.1
 pydantic==2.13.4
@@ -135,7 +135,7 @@ uvicorn app.main:app --reload --port 8000
 
 ### 第四步：为健康检查写测试
 
-创建 `pytest.ini`（让测试能找到 `app` 包）：
+在 apis 目录下创建 `pytest.ini`（让测试能找到 `app` 包）：
 
 ```ini
 [pytest]
@@ -163,7 +163,7 @@ def test_health_returns_ok() -> None:
     assert response.json() == {"status": "ok"}
 ```
 
-运行测试（务必在 `apps/api` 目录下）：
+停止刚在启动的服务， 运行测试
 
 ```bash
 pytest -q

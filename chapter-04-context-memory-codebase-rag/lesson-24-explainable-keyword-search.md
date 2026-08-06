@@ -1,8 +1,8 @@
 # 第 3 课：先实现可解释的关键词检索
 
-> 所属章节：[第 4 章：Context、Memory 与 Codebase RAG](./README.md)  
-> 上一课：[第 2 课：把代码和文档解析成可引用的 Chunk](./第02课-把代码和文档解析成可引用的 Chunk.md)  
-> 下一课：[第 4 课：接入 Embedding、Hybrid Search 和 Rerank](./第04课-接入 Embedding、Hybrid Search 和 Rerank.md)
+> 所属章节：[第 4 章：Context、Memory 与 Codebase RAG](./index.md)  
+> 上一课：[第 2 课：把代码和文档解析成可引用的 Chunk](./lesson-23-code-doc-chunk.md)  
+> 下一课：[第 4 课：接入 Embedding、Hybrid Search 和 Rerank](./lesson-25-embedding-hybrid-search-rerank.md)
 
 ### 你将完成什么
 

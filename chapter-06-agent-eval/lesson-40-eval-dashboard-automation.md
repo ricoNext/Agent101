@@ -1,7 +1,7 @@
 # 第 6 课：创建 Eval Dashboard 和自动化入口
 
-> 所属章节：[第 6 章：Agent Eval、回归测试与质量改进](./README.md)  
-> 上一课：[第 5 课：回归测试和版本对比](./第05课-回归测试和版本对比.md)
+> 所属章节：[第 6 章：Agent Eval、回归测试与质量改进](./index.md)  
+> 上一课：[第 5 课：回归测试和版本对比](./lesson-39-regression-test-version-compare.md)
 
 ### 前端页面要求
 

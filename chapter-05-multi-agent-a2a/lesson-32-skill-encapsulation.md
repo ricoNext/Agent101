@@ -1,8 +1,8 @@
 # 第 5 课：把重复任务封装为 Skill
 
-> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./README.md)  
-> 上一课：[第 4 课：结果聚合、冲突和 Reviewer](./第04课-结果聚合、冲突和 Reviewer.md)  
-> 下一课：[第 6 课：A2A 选修实验](./第06课-A2A 选修实验.md)
+> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./index.md)  
+> 上一课：[第 4 课：结果聚合、冲突和 Reviewer](./lesson-31-result-aggregation-conflict-reviewer.md)  
+> 下一课：[第 6 课：A2A 选修实验](./lesson-33-a2a-experiment.md)
 
 ### 你将完成什么
 

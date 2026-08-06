@@ -1,8 +1,8 @@
 # 第 2 课：定义工具、调用和审计协议
 
-> 所属章节：[第 2 章：构建 Tool Runtime 与 MCP 接入](./README.md)  
-> 上一课：[第 1 课：理解工具调用的边界](./第01课-理解工具调用的边界.md)  
-> 下一课：[第 3 课：实现 Tool Registry](./第03课-实现 Tool Registry.md)
+> 所属章节：[第 2 章：构建 Tool Runtime 与 MCP 接入](./index.md)  
+> 上一课：[第 1 课：理解工具调用的边界](./lesson-08-tool-call-boundaries.md)  
+> 下一课：[第 3 课：实现 Tool Registry](./lesson-10-tool-registry.md)
 
 ### 你将完成什么
 

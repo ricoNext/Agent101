@@ -1,7 +1,7 @@
 # 第 6 课：创建代码知识页面和 RAG 对照实验
 
-> 所属章节：[第 4 章：Context、Memory 与 Codebase RAG](./README.md)  
-> 上一课：[第 5 课：项目记忆与 Context Builder 集成](./第05课-项目记忆与 Context Builder 集成.md)
+> 所属章节：[第 4 章：Context、Memory 与 Codebase RAG](./index.md)  
+> 上一课：[第 5 课：项目记忆与 Context Builder 集成](./lesson-26-project-memory-context-builder.md)
 
 ### 你将完成什么
 

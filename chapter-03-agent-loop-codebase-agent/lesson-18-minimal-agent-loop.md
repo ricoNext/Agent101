@@ -1,8 +1,8 @@
 # 第 4 课：实现最小 Agent Loop
 
-> 所属章节：[第 3 章：实现可恢复的 Agent Loop 与 Codebase Agent](./README.md)  
-> 上一课：[第 3 课：定义 Agent Decision 并实现 Scripted Decider](./第03课-定义 Agent Decision 并实现 Scripted Decider.md)  
-> 下一课：[第 5 课：审批、取消和恢复](./第05课-审批、取消和恢复.md)
+> 所属章节：[第 3 章：实现可恢复的 Agent Loop 与 Codebase Agent](./index.md)  
+> 上一课：[第 3 课：定义 Agent Decision 并实现 Scripted Decider](./lesson-17-agent-decision-scripted-decider.md)  
+> 下一课：[第 5 课：审批、取消和恢复](./lesson-19-approval-cancel-resume.md)
 
 ### 你将完成什么
 

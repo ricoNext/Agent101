@@ -1,7 +1,7 @@
 # 第 1 课：先量化 Context，而不是盲目压缩
 
-> 所属章节：[第 4 章：Context、Memory 与 Codebase RAG](./README.md)  
-> 下一课：[第 2 课：把代码和文档解析成可引用的 Chunk](./第02课-把代码和文档解析成可引用的 Chunk.md)
+> 所属章节：[第 4 章：Context、Memory 与 Codebase RAG](./index.md)  
+> 下一课：[第 2 课：把代码和文档解析成可引用的 Chunk](./lesson-23-code-doc-chunk.md)
 
 ### 你将完成什么
 

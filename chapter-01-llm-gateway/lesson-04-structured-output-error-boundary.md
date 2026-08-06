@@ -1,8 +1,8 @@
 # 第 4 课：结构化输出和错误边界
 
-> 所属章节：[第 1 章：从零构建 LLM Gateway](./README.md)  
-> 上一课：[第 3 课：接入 OpenAI-compatible 模型服务](./第03课-接入 OpenAI-compatible 模型服务.md)  
-> 下一课：[第 5 课：实现 SSE 流式接口](./第05课-实现 SSE 流式接口.md)
+> 所属章节：[第 1 章：从零构建 LLM Gateway](./index.md)  
+> 上一课：[第 3 课：接入 OpenAI-compatible 模型服务](./lesson-03-openai-compatible-provider.md)  
+> 下一课：[第 5 课：实现 SSE 流式接口](./lesson-05-sse-streaming-api.md)
 
 ### 你将完成什么
 

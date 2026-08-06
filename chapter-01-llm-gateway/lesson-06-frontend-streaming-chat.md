@@ -1,8 +1,8 @@
 # 第 6 课：创建前端流式对话页
 
-> 所属章节：[第 1 章：从零构建 LLM Gateway](./README.md)  
-> 上一课：[第 5 课：实现 SSE 流式接口](./第05课-实现 SSE 流式接口.md)  
-> 下一课：[第 7 课：为第一章补齐测试和 Golden Tasks](./第07课-为第一章补齐测试和 Golden Tasks.md)
+> 所属章节：[第 1 章：从零构建 LLM Gateway](./index.md)  
+> 上一课：[第 5 课：实现 SSE 流式接口](./lesson-05-sse-streaming-api.md)  
+> 下一课：[第 7 课：为第一章补齐测试和 Golden Tasks](./lesson-07-tests-and-golden-tasks.md)
 
 ### 你将完成什么
 

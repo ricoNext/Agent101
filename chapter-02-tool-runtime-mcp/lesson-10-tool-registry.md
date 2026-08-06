@@ -1,8 +1,8 @@
 # 第 3 课：实现 Tool Registry
 
-> 所属章节：[第 2 章：构建 Tool Runtime 与 MCP 接入](./README.md)  
-> 上一课：[第 2 课：定义工具、调用和审计协议](./第02课-定义工具、调用和审计协议.md)  
-> 下一课：[第 4 课：实现权限、审批、超时和审计](./第04课-实现权限、审批、超时和审计.md)
+> 所属章节：[第 2 章：构建 Tool Runtime 与 MCP 接入](./index.md)  
+> 上一课：[第 2 课：定义工具、调用和审计协议](./lesson-09-tool-call-audit-protocol.md)  
+> 下一课：[第 4 课：实现权限、审批、超时和审计](./lesson-11-permission-approval-timeout-audit.md)
 
 ### 你将完成什么
 

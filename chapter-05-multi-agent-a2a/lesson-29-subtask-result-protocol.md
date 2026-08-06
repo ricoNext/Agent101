@@ -1,8 +1,8 @@
 # 第 2 课：定义 Subtask 和结果协议
 
-> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./README.md)  
-> 上一课：[第 1 课：判断是否需要 Multi-Agent](./第01课-判断是否需要 Multi-Agent.md)  
-> 下一课：[第 3 课：实现并行 Supervisor](./第03课-实现并行 Supervisor.md)
+> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./index.md)  
+> 上一课：[第 1 课：判断是否需要 Multi-Agent](./lesson-28-determine-need-multi-agent.md)  
+> 下一课：[第 3 课：实现并行 Supervisor](./lesson-30-parallel-supervisor.md)
 
 ### 你将完成什么
 

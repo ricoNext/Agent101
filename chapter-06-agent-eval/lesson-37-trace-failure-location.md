@@ -1,8 +1,8 @@
 # 第 3 课：保存 Trace 并定位失败步骤
 
-> 所属章节：[第 6 章：Agent Eval、回归测试与质量改进](./README.md)  
-> 上一课：[第 2 课：实现规则评测器](./第02课-实现规则评测器.md)  
-> 下一课：[第 4 课：谨慎使用 LLM-as-Judge](./第04课-谨慎使用 LLM-as-Judge.md)
+> 所属章节：[第 6 章：Agent Eval、回归测试与质量改进](./index.md)  
+> 上一课：[第 2 课：实现规则评测器](./lesson-36-rule-evaluator.md)  
+> 下一课：[第 4 课：谨慎使用 LLM-as-Judge](./lesson-38-llm-as-judge.md)
 
 ### 你将完成什么
 

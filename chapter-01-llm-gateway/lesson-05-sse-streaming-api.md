@@ -1,8 +1,8 @@
 # 第 5 课：实现 SSE 流式接口
 
-> 所属章节：[第 1 章：从零构建 LLM Gateway](./README.md)  
-> 上一课：[第 4 课：结构化输出和错误边界](./第04课-结构化输出和错误边界.md)  
-> 下一课：[第 6 课：创建前端流式对话页](./第06课-创建前端流式对话页.md)
+> 所属章节：[第 1 章：从零构建 LLM Gateway](./index.md)  
+> 上一课：[第 4 课：结构化输出和错误边界](./lesson-04-structured-output-error-boundary.md)  
+> 下一课：[第 6 课：创建前端流式对话页](./lesson-06-frontend-streaming-chat.md)
 
 ### 你将完成什么
 

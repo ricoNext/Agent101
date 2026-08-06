@@ -22,7 +22,7 @@
 
 整套课程围绕同一个持续演进的项目 **Agent Engineering Platform**（`agent-platform/`）展开。每一章只增加少量能力，最终交付一个可部署、可评测、可治理的全栈 Agent 平台。
 
-### [第一章：从零构建 LLM Gateway](./chapter-01-llm-gateway/README.md)
+### [第一章：从零构建 LLM Gateway](./chapter-01-llm-gateway/index.md)
 
 > 稳定调用模型，网页流式返回结果。先做 Mock Provider 再接真实模型，先跑通再优化。
 
@@ -34,7 +34,7 @@
 6. [第 6 课：创建前端流式对话页](./chapter-01-llm-gateway/lesson-06-frontend-streaming-chat.md)
 7. [第 7 课：为第一章补齐测试和 Golden Tasks](./chapter-01-llm-gateway/lesson-07-tests-and-golden-tasks.md)
 
-### [第二章：构建 Tool Runtime 与 MCP 接入](./chapter-02-tool-runtime-mcp/README.md)
+### [第二章：构建 Tool Runtime 与 MCP 接入](./chapter-02-tool-runtime-mcp/index.md)
 
 > 安全发现和调用工具。先让工具能被安全执行，模型工具选择在第三章接入。
 
@@ -46,7 +46,7 @@
 6. [第 13 课：创建工具管理和审批页面](./chapter-02-tool-runtime-mcp/lesson-13-tool-management-approval-page.md)
 7. [第 14 课：最小 MCP Server 选修实验](./chapter-02-tool-runtime-mcp/lesson-14-mcp-server-experiment.md)
 
-### [第三章：实现可恢复的 Agent Loop 与 Codebase Agent](./chapter-03-agent-loop-codebase-agent/README.md)
+### [第三章：实现可恢复的 Agent Loop 与 Codebase Agent](./chapter-03-agent-loop-codebase-agent/index.md)
 
 > 多步任务执行、暂停、恢复和代码修改。从 Scripted Decider 开始，最后才接入真实模型。
 
@@ -58,7 +58,7 @@
 6. [第 20 课：构建受限 Codebase 工具和 Sandbox](./chapter-03-agent-loop-codebase-agent/lesson-20-codebase-tools-sandbox.md)
 7. [第 21 课：接入真实模型决策和任务工作台](./chapter-03-agent-loop-codebase-agent/lesson-21-real-model-decision-workbench.md)
 
-### [第四章：Context、Memory 与 Codebase RAG](./chapter-04-context-memory-codebase-rag/README.md)
+### [第四章：Context、Memory 与 Codebase RAG](./chapter-04-context-memory-codebase-rag/index.md)
 
 > 检索代码和文档，管理项目记忆。让 Agent 在有限上下文内找到能支持结论的代码证据。
 
@@ -69,7 +69,7 @@
 5. [第 26 课：项目记忆与 Context Builder 集成](./chapter-04-context-memory-codebase-rag/lesson-26-project-memory-context-builder.md)
 6. [第 27 课：创建代码知识页面和 RAG 对照实验](./chapter-04-context-memory-codebase-rag/lesson-27-code-knowledge-rag-experiment.md)
 
-### [第五章：Multi-Agent、Skill 与 A2A](./chapter-05-multi-agent-a2a/README.md)
+### [第五章：Multi-Agent、Skill 与 A2A](./chapter-05-multi-agent-a2a/index.md)
 
 > 多个 Agent 分工协作。先问“是否应该多 Agent”，再写协作代码。
 
@@ -81,7 +81,7 @@
 6. [第 33 课：A2A 选修实验](./chapter-05-multi-agent-a2a/lesson-33-a2a-experiment.md)
 7. [第 34 课：创建协作任务页并完成验收](./chapter-05-multi-agent-a2a/lesson-34-collaboration-page-acceptance.md)
 
-### [第六章：Agent Eval、回归测试与质量改进](./chapter-06-agent-eval/README.md)
+### [第六章：Agent Eval、回归测试与质量改进](./chapter-06-agent-eval/index.md)
 
 > 用数据证明 Agent 是否变好了。不再只能说「这次 Demo 看起来不错」。
 
@@ -92,7 +92,7 @@
 5. [第 39 课：回归测试和版本对比](./chapter-06-agent-eval/lesson-39-regression-test-version-compare.md)
 6. [第 40 课：创建 Eval Dashboard 和自动化入口](./chapter-06-agent-eval/lesson-40-eval-dashboard-automation.md)
 
-### [第七章：生产工程、可观测性与 FinOps](./chapter-07-production-finops/README.md)
+### [第七章：生产工程、可观测性与 FinOps](./chapter-07-production-finops/index.md)
 
 > 部署、监控、成本控制和回滚。把本机项目变成可重复部署的服务。
 
@@ -103,7 +103,7 @@
 5. [第 45 课：版本、灰度和回滚](./chapter-07-production-finops/lesson-45-version-canary-rollback.md)
 6. [第 46 课：运维治理台和本章验收](./chapter-07-production-finops/lesson-46-ops-governance-acceptance.md)
 
-### [第八章：身份、审批、审计与治理](./chapter-08-compliance-governance/README.md)
+### [第八章：身份、审批、审计与治理](./chapter-08-compliance-governance/index.md)
 
 > 身份、权限、审计、脱敏和人工监督。把风险要求翻译成可实现的工程控制。
 
@@ -114,7 +114,7 @@
 5. [第 51 课：Human-in-the-loop 和 Kill Switch](./chapter-08-compliance-governance/lesson-51-human-in-loop-kill-switch.md)
 6. [第 52 课：合规与审计页面、本章验收](./chapter-08-compliance-governance/lesson-52-compliance-audit-page-acceptance.md)
 
-### [第九章：完成一个可展示的全栈 Agent 产品](./chapter-09-comprehensive-project-portfolio/README.md)
+### [第九章：完成一个可展示的全栈 Agent 产品](./chapter-09-comprehensive-project-portfolio/index.md)
 
 > 从已有能力中选一个真实场景，冻结范围、交付产品、部署演示和答辩。
 

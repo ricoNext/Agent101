@@ -1,7 +1,7 @@
 # 第 7 课：为第一章补齐测试和 Golden Tasks
 
-> 所属章节：[第 1 章：从零构建 LLM Gateway](./README.md)  
-> 上一课：[第 6 课：创建前端流式对话页](./第06课-创建前端流式对话页.md)
+> 所属章节：[第 1 章：从零构建 LLM Gateway](./index.md)  
+> 上一课：[第 6 课：创建前端流式对话页](./lesson-06-frontend-streaming-chat.md)
 
 ### 你将完成什么
 

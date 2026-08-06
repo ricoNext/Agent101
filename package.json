@@ -1,0 +1,18 @@
+{
+  "name": "ai-agent-101",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI Agent 全栈工程师训练营课程站点",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev .",
+    "build": "vitepress build .",
+    "preview": "vitepress preview .",
+    "format": "biome format --write .",
+    "format:check": "biome format . --error-on-unmatched"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.0",
+    "vitepress": "^1.6.4"
+  }
+}

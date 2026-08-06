@@ -1,8 +1,8 @@
 # 第 6 课：A2A 选修实验
 
-> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./README.md)  
-> 上一课：[第 5 课：把重复任务封装为 Skill](./第05课-把重复任务封装为 Skill.md)  
-> 下一课：[第 7 课：创建协作任务页并完成验收](./第07课-创建协作任务页并完成验收.md)
+> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./index.md)  
+> 上一课：[第 5 课：把重复任务封装为 Skill](./lesson-32-skill-encapsulation.md)  
+> 下一课：[第 7 课：创建协作任务页并完成验收](./lesson-34-collaboration-page-acceptance.md)
 
 ### 你将完成什么
 

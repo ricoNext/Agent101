@@ -1,8 +1,8 @@
 # 第 6 课：创建工具管理和审批页面
 
-> 所属章节：[第 2 章：构建 Tool Runtime 与 MCP 接入](./README.md)  
-> 上一课：[第 5 课：测试 Tool Runtime](./第05课-测试 Tool Runtime.md)  
-> 下一课：[第 7 课：最小 MCP Server 选修实验](./第07课-最小 MCP Server 选修实验.md)
+> 所属章节：[第 2 章：构建 Tool Runtime 与 MCP 接入](./index.md)  
+> 上一课：[第 5 课：测试 Tool Runtime](./lesson-12-test-tool-runtime.md)  
+> 下一课：[第 7 课：最小 MCP Server 选修实验](./lesson-14-mcp-server-experiment.md)
 
 ### 你将完成什么
 

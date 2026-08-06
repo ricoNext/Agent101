@@ -1,7 +1,7 @@
 # 第 1 课：理解工具调用的边界
 
-> 所属章节：[第 2 章：构建 Tool Runtime 与 MCP 接入](./README.md)  
-> 下一课：[第 2 课：定义工具、调用和审计协议](./第02课-定义工具、调用和审计协议.md)
+> 所属章节：[第 2 章：构建 Tool Runtime 与 MCP 接入](./index.md)  
+> 下一课：[第 2 课：定义工具、调用和审计协议](./lesson-09-tool-call-audit-protocol.md)
 
 ### 你将完成什么
 

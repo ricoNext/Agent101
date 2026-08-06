@@ -1,7 +1,7 @@
 # 第 1 课：判断是否需要 Multi-Agent
 
-> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./README.md)  
-> 下一课：[第 2 课：定义 Subtask 和结果协议](./第02课-定义 Subtask 和结果协议.md)
+> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./index.md)  
+> 下一课：[第 2 课：定义 Subtask 和结果协议](./lesson-29-subtask-result-protocol.md)
 
 ### 你将完成什么
 

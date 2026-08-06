@@ -1,0 +1,122 @@
+:root {
+  --vp-c-brand-1: #ea580c;
+  --vp-c-brand-2: #f97316;
+  --vp-c-brand-3: #fb923c;
+  --vp-c-brand-soft: rgba(249, 115, 22, 0.12);
+  --vp-c-bg: #fbfaf7;
+  --vp-c-bg-alt: #f4f1eb;
+  --vp-c-bg-soft: #f7f5f0;
+  --vp-c-divider: #e7e1d8;
+  --vp-c-text-1: #1c1917;
+  --vp-c-text-2: #57534e;
+  --vp-font-family-base: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --vp-font-family-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.dark {
+  --vp-c-brand-1: #fb923c;
+  --vp-c-brand-2: #fdba74;
+  --vp-c-brand-3: #fed7aa;
+  --vp-c-brand-soft: rgba(251, 146, 60, 0.16);
+  --vp-c-bg: #171513;
+  --vp-c-bg-alt: #211e1a;
+  --vp-c-bg-soft: #26221e;
+  --vp-c-divider: #3b342d;
+  --vp-c-text-1: #f5f5f4;
+  --vp-c-text-2: #c7c2ba;
+}
+
+body {
+  background: var(--vp-c-bg);
+}
+
+.VPNavBar {
+  background-color: color-mix(in srgb, var(--vp-c-bg) 90%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.VPHero .name {
+  color: var(--vp-c-text-1);
+  letter-spacing: -0.02em;
+}
+
+.VPHero .text {
+  max-width: 760px;
+  color: var(--vp-c-brand-1);
+  font-weight: 700;
+}
+
+.VPHero .tagline {
+  max-width: 680px;
+  color: var(--vp-c-text-2);
+}
+
+.VPButton.brand {
+  border-color: var(--vp-c-brand-1);
+  background-color: var(--vp-c-brand-1);
+}
+
+.VPButton.brand:hover {
+  border-color: var(--vp-c-brand-2);
+  background-color: var(--vp-c-brand-2);
+}
+
+.VPFeature {
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  border-radius: 8px;
+}
+
+.VPFeature:hover {
+  border-color: var(--vp-c-brand-3);
+}
+
+.vp-doc h2 {
+  margin-top: 3rem;
+  border-top: 1px solid var(--vp-c-divider);
+  padding-top: 1.5rem;
+}
+
+.vp-doc h3 {
+  margin-top: 2rem;
+}
+
+.vp-doc table {
+  display: table;
+  width: 100%;
+}
+
+.vp-doc blockquote {
+  border-left-color: var(--vp-c-brand-2);
+  background: var(--vp-c-brand-soft);
+  border-radius: 0 6px 6px 0;
+  padding: 0.75rem 1rem;
+}
+
+.vp-doc div[class*="language-"] {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+}
+
+.VPSidebarItem.level-0 > .item > .text {
+  font-weight: 650;
+}
+
+.custom-block {
+  border-radius: 6px;
+}
+
+@media (max-width: 640px) {
+  .VPHero .name {
+    font-size: 2.6rem;
+  }
+
+  .VPHero .text {
+    font-size: 1.5rem;
+  }
+
+  .vp-doc table {
+    display: block;
+    overflow-x: auto;
+  }
+}

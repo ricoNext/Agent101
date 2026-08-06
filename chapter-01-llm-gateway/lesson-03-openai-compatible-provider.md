@@ -1,8 +1,8 @@
 # 第 3 课：接入 OpenAI-compatible 模型服务
 
-> 所属章节：[第 1 章：从零构建 LLM Gateway](./README.md)  
-> 上一课：[第 2 课：先接 Mock Provider，再接真实模型](./第02课-先接 Mock Provider，再接真实模型.md)  
-> 下一课：[第 4 课：结构化输出和错误边界](./第04课-结构化输出和错误边界.md)
+> 所属章节：[第 1 章：从零构建 LLM Gateway](./index.md)  
+> 上一课：[第 2 课：先接 Mock Provider，再接真实模型](./lesson-02-mock-provider-real-model.md)  
+> 下一课：[第 4 课：结构化输出和错误边界](./lesson-04-structured-output-error-boundary.md)
 
 ### 你将完成什么
 

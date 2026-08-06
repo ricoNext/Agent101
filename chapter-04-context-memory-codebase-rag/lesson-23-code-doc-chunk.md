@@ -1,8 +1,8 @@
 # 第 2 课：把代码和文档解析成可引用的 Chunk
 
-> 所属章节：[第 4 章：Context、Memory 与 Codebase RAG](./README.md)  
-> 上一课：[第 1 课：先量化 Context，而不是盲目压缩](./第01课-先量化 Context，而不是盲目压缩.md)  
-> 下一课：[第 3 课：先实现可解释的关键词检索](./第03课-先实现可解释的关键词检索.md)
+> 所属章节：[第 4 章：Context、Memory 与 Codebase RAG](./index.md)  
+> 上一课：[第 1 课：先量化 Context，而不是盲目压缩](./lesson-22-context-quantification.md)  
+> 下一课：[第 3 课：先实现可解释的关键词检索](./lesson-24-explainable-keyword-search.md)
 
 ### 你将完成什么
 

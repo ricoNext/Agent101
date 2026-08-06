@@ -1,8 +1,8 @@
 # 第 4 课：数据脱敏、隔离和审计
 
-> 所属章节：[第 8 章：身份、审批、审计与治理](./README.md)  
-> 上一课：[第 3 课：实现持久化审批单](./第03课-实现持久化审批单.md)  
-> 下一课：[第 5 课：Human-in-the-loop 和 Kill Switch](./第05课-Human-in-the-loop 和 Kill Switch.md)
+> 所属章节：[第 8 章：身份、审批、审计与治理](./index.md)  
+> 上一课：[第 3 课：实现持久化审批单](./lesson-49-persistent-approval.md)  
+> 下一课：[第 5 课：Human-in-the-loop 和 Kill Switch](./lesson-51-human-in-loop-kill-switch.md)
 
 ### 你将完成什么
 

@@ -1,8 +1,8 @@
 # 第 6 课：构建受限 Codebase 工具和 Sandbox
 
-> 所属章节：[第 3 章：实现可恢复的 Agent Loop 与 Codebase Agent](./README.md)  
-> 上一课：[第 5 课：审批、取消和恢复](./第05课-审批、取消和恢复.md)  
-> 下一课：[第 7 课：接入真实模型决策和任务工作台](./第07课-接入真实模型决策和任务工作台.md)
+> 所属章节：[第 3 章：实现可恢复的 Agent Loop 与 Codebase Agent](./index.md)  
+> 上一课：[第 5 课：审批、取消和恢复](./lesson-19-approval-cancel-resume.md)  
+> 下一课：[第 7 课：接入真实模型决策和任务工作台](./lesson-21-real-model-decision-workbench.md)
 
 ### 你将完成什么
 

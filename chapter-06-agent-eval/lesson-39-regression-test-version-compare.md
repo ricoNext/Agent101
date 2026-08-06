@@ -1,8 +1,8 @@
 # 第 5 课：回归测试和版本对比
 
-> 所属章节：[第 6 章：Agent Eval、回归测试与质量改进](./README.md)  
-> 上一课：[第 4 课：谨慎使用 LLM-as-Judge](./第04课-谨慎使用 LLM-as-Judge.md)  
-> 下一课：[第 6 课：创建 Eval Dashboard 和自动化入口](./第06课-创建 Eval Dashboard 和自动化入口.md)
+> 所属章节：[第 6 章：Agent Eval、回归测试与质量改进](./index.md)  
+> 上一课：[第 4 课：谨慎使用 LLM-as-Judge](./lesson-38-llm-as-judge.md)  
+> 下一课：[第 6 课：创建 Eval Dashboard 和自动化入口](./lesson-40-eval-dashboard-automation.md)
 
 ### 你将完成什么
 

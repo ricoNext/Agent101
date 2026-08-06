@@ -1,8 +1,8 @@
 # 第 4 课：实现权限、审批、超时和审计
 
-> 所属章节：[第 2 章：构建 Tool Runtime 与 MCP 接入](./README.md)  
-> 上一课：[第 3 课：实现 Tool Registry](./第03课-实现 Tool Registry.md)  
-> 下一课：[第 5 课：测试 Tool Runtime](./第05课-测试 Tool Runtime.md)
+> 所属章节：[第 2 章：构建 Tool Runtime 与 MCP 接入](./index.md)  
+> 上一课：[第 3 课：实现 Tool Registry](./lesson-10-tool-registry.md)  
+> 下一课：[第 5 课：测试 Tool Runtime](./lesson-12-test-tool-runtime.md)
 
 ### 你将完成什么
 

@@ -1,8 +1,8 @@
 # 第 2 课：实现规则评测器
 
-> 所属章节：[第 6 章：Agent Eval、回归测试与质量改进](./README.md)  
-> 上一课：[第 1 课：建立 Golden Dataset](./第01课-建立 Golden Dataset.md)  
-> 下一课：[第 3 课：保存 Trace 并定位失败步骤](./第03课-保存 Trace 并定位失败步骤.md)
+> 所属章节：[第 6 章：Agent Eval、回归测试与质量改进](./index.md)  
+> 上一课：[第 1 课：建立 Golden Dataset](./lesson-35-golden-dataset.md)  
+> 下一课：[第 3 课：保存 Trace 并定位失败步骤](./lesson-37-trace-failure-location.md)
 
 ### 你将完成什么
 

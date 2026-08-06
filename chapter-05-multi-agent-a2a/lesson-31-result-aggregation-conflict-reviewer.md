@@ -1,8 +1,8 @@
 # 第 4 课：结果聚合、冲突和 Reviewer
 
-> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./README.md)  
-> 上一课：[第 3 课：实现并行 Supervisor](./第03课-实现并行 Supervisor.md)  
-> 下一课：[第 5 课：把重复任务封装为 Skill](./第05课-把重复任务封装为 Skill.md)
+> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./index.md)  
+> 上一课：[第 3 课：实现并行 Supervisor](./lesson-30-parallel-supervisor.md)  
+> 下一课：[第 5 课：把重复任务封装为 Skill](./lesson-32-skill-encapsulation.md)
 
 ### 你将完成什么
 

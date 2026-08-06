@@ -1,8 +1,8 @@
 # 第 5 课：测试 Tool Runtime
 
-> 所属章节：[第 2 章：构建 Tool Runtime 与 MCP 接入](./README.md)  
-> 上一课：[第 4 课：实现权限、审批、超时和审计](./第04课-实现权限、审批、超时和审计.md)  
-> 下一课：[第 6 课：创建工具管理和审批页面](./第06课-创建工具管理和审批页面.md)
+> 所属章节：[第 2 章：构建 Tool Runtime 与 MCP 接入](./index.md)  
+> 上一课：[第 4 课：实现权限、审批、超时和审计](./lesson-11-permission-approval-timeout-audit.md)  
+> 下一课：[第 6 课：创建工具管理和审批页面](./lesson-13-tool-management-approval-page.md)
 
 ### 你将完成什么
 

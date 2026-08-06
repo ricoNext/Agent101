@@ -1,8 +1,8 @@
 # 第 3 课：结构化日志、Trace 和 Replay
 
-> 所属章节：[第 7 章：生产工程、可观测性与 FinOps](./README.md)  
-> 上一课：[第 2 课：配置、密钥和健康检查](./第02课-配置、密钥和健康检查.md)  
-> 下一课：[第 4 课：建立 Token 预算和 FinOps 报表](./第04课-建立 Token 预算和 FinOps 报表.md)
+> 所属章节：[第 7 章：生产工程、可观测性与 FinOps](./index.md)  
+> 上一课：[第 2 课：配置、密钥和健康检查](./lesson-42-config-secrets-healthcheck.md)  
+> 下一课：[第 4 课：建立 Token 预算和 FinOps 报表](./lesson-44-token-budget-finops-report.md)
 
 ### 你将完成什么
 

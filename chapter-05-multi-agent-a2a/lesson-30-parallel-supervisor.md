@@ -1,8 +1,8 @@
 # 第 3 课：实现并行 Supervisor
 
-> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./README.md)  
-> 上一课：[第 2 课：定义 Subtask 和结果协议](./第02课-定义 Subtask 和结果协议.md)  
-> 下一课：[第 4 课：结果聚合、冲突和 Reviewer](./第04课-结果聚合、冲突和 Reviewer.md)
+> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./index.md)  
+> 上一课：[第 2 课：定义 Subtask 和结果协议](./lesson-29-subtask-result-protocol.md)  
+> 下一课：[第 4 课：结果聚合、冲突和 Reviewer](./lesson-31-result-aggregation-conflict-reviewer.md)
 
 ### 你将完成什么
 

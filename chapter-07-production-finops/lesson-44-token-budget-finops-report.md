@@ -1,8 +1,8 @@
 # 第 4 课：建立 Token 预算和 FinOps 报表
 
-> 所属章节：[第 7 章：生产工程、可观测性与 FinOps](./README.md)  
-> 上一课：[第 3 课：结构化日志、Trace 和 Replay](./第03课-结构化日志、Trace 和 Replay.md)  
-> 下一课：[第 5 课：版本、灰度和回滚](./第05课-版本、灰度和回滚.md)
+> 所属章节：[第 7 章：生产工程、可观测性与 FinOps](./index.md)  
+> 上一课：[第 3 课：结构化日志、Trace 和 Replay](./lesson-43-structured-logs-trace-replay.md)  
+> 下一课：[第 5 课：版本、灰度和回滚](./lesson-45-version-canary-rollback.md)
 
 ### 你将完成什么
 

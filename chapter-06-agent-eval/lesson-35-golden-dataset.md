@@ -1,7 +1,7 @@
 # 第 1 课：建立 Golden Dataset
 
-> 所属章节：[第 6 章：Agent Eval、回归测试与质量改进](./README.md)  
-> 下一课：[第 2 课：实现规则评测器](./第02课-实现规则评测器.md)
+> 所属章节：[第 6 章：Agent Eval、回归测试与质量改进](./index.md)  
+> 下一课：[第 2 课：实现规则评测器](./lesson-36-rule-evaluator.md)
 
 ### 你将完成什么
 

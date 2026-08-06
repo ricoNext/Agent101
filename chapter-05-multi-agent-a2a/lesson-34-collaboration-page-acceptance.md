@@ -1,7 +1,7 @@
 # 第 7 课：创建协作任务页并完成验收
 
-> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./README.md)  
-> 上一课：[第 6 课：A2A 选修实验](./第06课-A2A 选修实验.md)
+> 所属章节：[第 5 章：Multi-Agent、Skill 与 A2A](./index.md)  
+> 上一课：[第 6 课：A2A 选修实验](./lesson-33-a2a-experiment.md)
 
 ### 前端页面要求
 

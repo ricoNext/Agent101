@@ -1,8 +1,8 @@
 # 第 3 课：定义 Agent Decision 并实现 Scripted Decider
 
-> 所属章节：[第 3 章：实现可恢复的 Agent Loop 与 Codebase Agent](./README.md)  
-> 上一课：[第 2 课：保存任务和 Checkpoint](./第02课-保存任务和 Checkpoint.md)  
-> 下一课：[第 4 课：实现最小 Agent Loop](./第04课-实现最小 Agent Loop.md)
+> 所属章节：[第 3 章：实现可恢复的 Agent Loop 与 Codebase Agent](./index.md)  
+> 上一课：[第 2 课：保存任务和 Checkpoint](./lesson-16-save-tasks-checkpoint.md)  
+> 下一课：[第 4 课：实现最小 Agent Loop](./lesson-18-minimal-agent-loop.md)
 
 ### 你将完成什么
 

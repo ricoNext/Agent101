@@ -1,7 +1,7 @@
 # 第 1 课：把本地依赖写成 Docker Compose
 
-> 所属章节：[第 7 章：生产工程、可观测性与 FinOps](./README.md)  
-> 下一课：[第 2 课：配置、密钥和健康检查](./第02课-配置、密钥和健康检查.md)
+> 所属章节：[第 7 章：生产工程、可观测性与 FinOps](./index.md)  
+> 下一课：[第 2 课：配置、密钥和健康检查](./lesson-42-config-secrets-healthcheck.md)
 
 ### 你将完成什么
 

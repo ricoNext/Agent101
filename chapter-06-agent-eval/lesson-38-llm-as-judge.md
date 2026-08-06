@@ -1,8 +1,8 @@
 # 第 4 课：谨慎使用 LLM-as-Judge
 
-> 所属章节：[第 6 章：Agent Eval、回归测试与质量改进](./README.md)  
-> 上一课：[第 3 课：保存 Trace 并定位失败步骤](./第03课-保存 Trace 并定位失败步骤.md)  
-> 下一课：[第 5 课：回归测试和版本对比](./第05课-回归测试和版本对比.md)
+> 所属章节：[第 6 章：Agent Eval、回归测试与质量改进](./index.md)  
+> 上一课：[第 3 课：保存 Trace 并定位失败步骤](./lesson-37-trace-failure-location.md)  
+> 下一课：[第 5 课：回归测试和版本对比](./lesson-39-regression-test-version-compare.md)
 
 ### 你将完成什么
 

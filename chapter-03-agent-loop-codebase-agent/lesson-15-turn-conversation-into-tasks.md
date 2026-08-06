@@ -1,7 +1,7 @@
 # 第 1 课：把“对话”变成“任务”
 
-> 所属章节：[第 3 章：实现可恢复的 Agent Loop 与 Codebase Agent](./README.md)  
-> 下一课：[第 2 课：保存任务和 Checkpoint](./第02课-保存任务和 Checkpoint.md)
+> 所属章节：[第 3 章：实现可恢复的 Agent Loop 与 Codebase Agent](./index.md)  
+> 下一课：[第 2 课：保存任务和 Checkpoint](./lesson-16-save-tasks-checkpoint.md)
 
 ### 你将完成什么
 

@@ -1,8 +1,8 @@
 # 第 5 课：Human-in-the-loop 和 Kill Switch
 
-> 所属章节：[第 8 章：身份、审批、审计与治理](./README.md)  
-> 上一课：[第 4 课：数据脱敏、隔离和审计](./第04课-数据脱敏、隔离和审计.md)  
-> 下一课：[第 6 课：合规与审计页面、本章验收](./第06课-合规与审计页面、本章验收.md)
+> 所属章节：[第 8 章：身份、审批、审计与治理](./index.md)  
+> 上一课：[第 4 课：数据脱敏、隔离和审计](./lesson-50-data-masking-isolation-audit.md)  
+> 下一课：[第 6 课：合规与审计页面、本章验收](./lesson-52-compliance-audit-page-acceptance.md)
 
 ### 你将完成什么
 

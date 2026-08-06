@@ -1,7 +1,7 @@
 # 第 6 课：合规与审计页面、本章验收
 
-> 所属章节：[第 8 章：身份、审批、审计与治理](./README.md)  
-> 上一课：[第 5 课：Human-in-the-loop 和 Kill Switch](./第05课-Human-in-the-loop 和 Kill Switch.md)
+> 所属章节：[第 8 章：身份、审批、审计与治理](./index.md)  
+> 上一课：[第 5 课：Human-in-the-loop 和 Kill Switch](./lesson-51-human-in-loop-kill-switch.md)
 
 创建 `/governance` 页面：
 

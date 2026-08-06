@@ -1,7 +1,7 @@
 # 第 1 课：写一页产品需求
 
-> 所属章节：[第 9 章：完成一个可展示的全栈 Agent 产品](./README.md)  
-> 下一课：[第 2 课：冻结架构和核心任务](./第02课-冻结架构和核心任务.md)
+> 所属章节：[第 9 章：完成一个可展示的全栈 Agent 产品](./index.md)  
+> 下一课：[第 2 课：冻结架构和核心任务](./lesson-54-architecture-core-tasks.md)
 
 创建 `docs/product-requirements.md`，必须回答：
 

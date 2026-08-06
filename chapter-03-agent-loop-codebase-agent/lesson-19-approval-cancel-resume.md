@@ -1,8 +1,8 @@
 # 第 5 课：审批、取消和恢复
 
-> 所属章节：[第 3 章：实现可恢复的 Agent Loop 与 Codebase Agent](./README.md)  
-> 上一课：[第 4 课：实现最小 Agent Loop](./第04课-实现最小 Agent Loop.md)  
-> 下一课：[第 6 课：构建受限 Codebase 工具和 Sandbox](./第06课-构建受限 Codebase 工具和 Sandbox.md)
+> 所属章节：[第 3 章：实现可恢复的 Agent Loop 与 Codebase Agent](./index.md)  
+> 上一课：[第 4 课：实现最小 Agent Loop](./lesson-18-minimal-agent-loop.md)  
+> 下一课：[第 6 课：构建受限 Codebase 工具和 Sandbox](./lesson-20-codebase-tools-sandbox.md)
 
 ### 你将完成什么
 

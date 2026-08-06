@@ -1,7 +1,7 @@
 # 第 7 课：接入真实模型决策和任务工作台
 
-> 所属章节：[第 3 章：实现可恢复的 Agent Loop 与 Codebase Agent](./README.md)  
-> 上一课：[第 6 课：构建受限 Codebase 工具和 Sandbox](./第06课-构建受限 Codebase 工具和 Sandbox.md)
+> 所属章节：[第 3 章：实现可恢复的 Agent Loop 与 Codebase Agent](./index.md)  
+> 上一课：[第 6 课：构建受限 Codebase 工具和 Sandbox](./lesson-20-codebase-tools-sandbox.md)
 
 ### 你将完成什么
 

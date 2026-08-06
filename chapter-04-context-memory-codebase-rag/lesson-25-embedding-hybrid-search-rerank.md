@@ -1,8 +1,8 @@
 # 第 4 课：接入 Embedding、Hybrid Search 和 Rerank
 
-> 所属章节：[第 4 章：Context、Memory 与 Codebase RAG](./README.md)  
-> 上一课：[第 3 课：先实现可解释的关键词检索](./第03课-先实现可解释的关键词检索.md)  
-> 下一课：[第 5 课：项目记忆与 Context Builder 集成](./第05课-项目记忆与 Context Builder 集成.md)
+> 所属章节：[第 4 章：Context、Memory 与 Codebase RAG](./index.md)  
+> 上一课：[第 3 课：先实现可解释的关键词检索](./lesson-24-explainable-keyword-search.md)  
+> 下一课：[第 5 课：项目记忆与 Context Builder 集成](./lesson-26-project-memory-context-builder.md)
 
 ### 你将完成什么
 
