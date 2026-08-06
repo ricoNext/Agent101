@@ -9,8 +9,10 @@
   --vp-c-divider: #e7e1d8;
   --vp-c-text-1: #1c1917;
   --vp-c-text-2: #57534e;
-  --vp-font-family-base: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --vp-font-family-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --vp-font-family-base:
+    "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --vp-font-family-mono:
+    "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 .dark {
@@ -69,6 +71,13 @@ body {
 
 .VPFeature:hover {
   border-color: var(--vp-c-brand-3);
+}
+
+.VPFeature > .box > .VPImage {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
 }
 
 .vp-doc h2 {

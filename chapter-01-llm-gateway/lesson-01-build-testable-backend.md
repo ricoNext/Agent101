@@ -1,7 +1,8 @@
 # 第 1 课：建立一个可测试的后端
 
 > 所属章节：[第 1 章：从零构建 LLM Gateway](./index.md)  
-> 下一课：[第 2 课：先接 Mock Provider，再接真实模型](./第02课-先接 Mock Provider，再接真实模型.md)
+> 下一课：[第 2 课：先接 Mock Provider，再接真实模型](./lesson-02-mock-provider-real-model.md)
+>[课程代码](https://github.com/ricoNext/agent-platform/tree/chapter-01)
 
 ### 你将完成什么
 
