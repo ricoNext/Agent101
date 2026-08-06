@@ -18,10 +18,10 @@
 
 ## 课程目录
 
-1. [第 1 课：判断是否需要 Multi-Agent](./lesson-01-determine-need-multi-agent.md)
-2. [第 2 课：定义 Subtask 和结果协议](./lesson-02-subtask-result-protocol.md)
-3. [第 3 课：实现并行 Supervisor](./lesson-03-parallel-supervisor.md)
-4. [第 4 课：结果聚合、冲突和 Reviewer](./lesson-04-result-aggregation-conflict-reviewer.md)
-5. [第 5 课：把重复任务封装为 Skill](./lesson-05-skill-encapsulation.md)
-6. [第 6 课：A2A 选修实验](./lesson-06-a2a-experiment.md)
-7. [第 7 课：创建协作任务页并完成验收](./lesson-07-collaboration-page-acceptance.md)
+1. [第 1 课：判断是否需要 Multi-Agent](./lesson-28-determine-need-multi-agent.md)
+2. [第 2 课：定义 Subtask 和结果协议](./lesson-29-subtask-result-protocol.md)
+3. [第 3 课：实现并行 Supervisor](./lesson-30-parallel-supervisor.md)
+4. [第 4 课：结果聚合、冲突和 Reviewer](./lesson-31-result-aggregation-conflict-reviewer.md)
+5. [第 5 课：把重复任务封装为 Skill](./lesson-32-skill-encapsulation.md)
+6. [第 6 课：A2A 选修实验](./lesson-33-a2a-experiment.md)
+7. [第 7 课：创建协作任务页并完成验收](./lesson-34-collaboration-page-acceptance.md)

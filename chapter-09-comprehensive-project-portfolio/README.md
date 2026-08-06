@@ -16,8 +16,8 @@
 
 ## 课程目录
 
-1. [第 1 课：写一页产品需求](./lesson-01-product-requirements.md)
-2. [第 2 课：冻结架构和核心任务](./lesson-02-architecture-core-tasks.md)
-3. [第 3 课：完成全栈用户流程](./lesson-03-fullstack-user-flow.md)
-4. [第 4 课：做一次真实的质量改进](./lesson-04-quality-improvement.md)
-5. [第 5 课：部署、演示与答辩](./lesson-05-deploy-demo-defense.md)
+1. [第 1 课：写一页产品需求](./lesson-53-product-requirements.md)
+2. [第 2 课：冻结架构和核心任务](./lesson-54-architecture-core-tasks.md)
+3. [第 3 课：完成全栈用户流程](./lesson-55-fullstack-user-flow.md)
+4. [第 4 课：做一次真实的质量改进](./lesson-56-quality-improvement.md)
+5. [第 5 课：部署、演示与答辩](./lesson-57-deploy-demo-defense.md)

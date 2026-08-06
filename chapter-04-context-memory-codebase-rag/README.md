@@ -17,9 +17,9 @@
 
 ## 课程目录
 
-1. [第 1 课：先量化 Context，而不是盲目压缩](./lesson-01-context-quantification.md)
-2. [第 2 课：把代码和文档解析成可引用的 Chunk](./lesson-02-code-doc-chunk.md)
-3. [第 3 课：先实现可解释的关键词检索](./lesson-03-explainable-keyword-search.md)
-4. [第 4 课：接入 Embedding、Hybrid Search 和 Rerank](./lesson-04-embedding-hybrid-search-rerank.md)
-5. [第 5 课：项目记忆与 Context Builder 集成](./lesson-05-project-memory-context-builder.md)
-6. [第 6 课：创建代码知识页面和 RAG 对照实验](./lesson-06-code-knowledge-rag-experiment.md)
+1. [第 1 课：先量化 Context，而不是盲目压缩](./lesson-22-context-quantification.md)
+2. [第 2 课：把代码和文档解析成可引用的 Chunk](./lesson-23-code-doc-chunk.md)
+3. [第 3 课：先实现可解释的关键词检索](./lesson-24-explainable-keyword-search.md)
+4. [第 4 课：接入 Embedding、Hybrid Search 和 Rerank](./lesson-25-embedding-hybrid-search-rerank.md)
+5. [第 5 课：项目记忆与 Context Builder 集成](./lesson-26-project-memory-context-builder.md)
+6. [第 6 课：创建代码知识页面和 RAG 对照实验](./lesson-27-code-knowledge-rag-experiment.md)

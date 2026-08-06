@@ -1,41 +1,10 @@
-# Python
-.venv/
-venv/
-__pycache__/
-*.py[cod]
-*.egg-info/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-
-# Node / frontend
-node_modules/
-.next/
-.turbo/
-dist/
-build/
-*.tsbuildinfo
-
-# Env & secrets
-.env
-.env.*
-!.env.example
-*.pem
-credentials.json
-
 # IDE / OS
 .DS_Store
 .idea/
 .vscode/
-.workbuddy/
 *.swp
 *.swo
 
-# Logs
-*.log
-logs/
-
+# Internal
 .codebuddy/
 .workbuddy/
