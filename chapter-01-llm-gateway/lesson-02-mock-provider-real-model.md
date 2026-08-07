@@ -280,6 +280,14 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
 重启 `uvicorn`，在 `/docs` 调用 `POST /v1/chat`：
 
+> 启动需要先在  apps/api 目录下执行 `source .venv/bin/activate` 激活虚拟环境
+
+```bash
+source .venv/bin/activate
+uvicorn app.main:app --reload --port 8000
+```
+
+然后访问 `/v1/chat` 接口， 传入 `messages` 参数， 参数格式为：
 
 ```json
 {
@@ -290,6 +298,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
 ```
 
 可以直接使用 curl 来访问：
+
 ```bash
 curl -X POST http://localhost:8000/v1/chat -H "Content-Type: application/json" -d '{"messages": [{"role": "user", "content": "你好"}]}'
 ```
