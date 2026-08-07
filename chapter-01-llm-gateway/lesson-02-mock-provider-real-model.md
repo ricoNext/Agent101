@@ -15,6 +15,8 @@
 
 ### 第一步：定义数据协议
 
+为了兼容不同模型，我们需要定义一个通用的数据协议类型
+
 创建 `app/schemas.py`：
 
 ```python
@@ -22,28 +24,38 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-
+# 对话信息类型
 class ChatMessage(BaseModel):
+    # 对话角色
     role: Literal["system", "user", "assistant"]
     content: str = Field(min_length=1)
 
-
+# 对话请求返回结构
 class ChatRequest(BaseModel):
     messages: list[ChatMessage] = Field(min_length=1)
     model: str | None = None
 
-
+# 对话响应返回结构
 class ChatResponse(BaseModel):
+    # 对话 ID
     run_id: str
+    # 对话文本
     text: str
+    # 模型名称
     model: str
+    # 输入 token 数量
     input_tokens: int | None = None
+    # 输出 token 数量
     output_tokens: int | None = None
+    # 延迟时间
     latency_ms: int
 
 
+# 错误响应返回结构
 class ErrorResponse(BaseModel):
+    # 错误码
     code: str
+    # 错误消息
     message: str
     run_id: str | None = None
 ```
@@ -72,6 +84,10 @@ class ErrorResponse(BaseModel):
 
 ### 第二步：定义 Provider 接口
 
+有了通用的模型之后我们创建一个 Provider 接口，这个接口定义了模型提供者的接口，包括：
+- complete 方法，用于完成对话
+- stream 方法，用于流式对话
+
 创建目录和文件：
 
 ```bash
@@ -87,7 +103,7 @@ from typing import AsyncIterator, Protocol
 
 from app.schemas import ChatMessage
 
-
+# ProviderResult 是模型提供者的返回结果，包括：文本、模型、输入和输出 token 数量
 @dataclass
 class ProviderResult:
     text: str
@@ -95,7 +111,9 @@ class ProviderResult:
     input_tokens: int | None
     output_tokens: int | None
 
-
+# ModelProvider 是模型提供者的协议，包括：
+# - complete 方法，用于完成对话
+# - stream 方法，用于流式对话
 class ModelProvider(Protocol):
     async def complete(
         self,
@@ -133,6 +151,8 @@ class ModelProvider(Protocol):
 
 ### 第三步：实现 Mock Provider
 
+接下来我们实现一个 Mock Provider，这个 Provider 的实现非常简单，只是返回一个固定的文本。
+
 创建 `app/providers/mock.py`：
 
 ```python
@@ -142,8 +162,9 @@ from typing import AsyncIterator
 from app.providers.base import ModelProvider, ProviderResult
 from app.schemas import ChatMessage
 
-
+# MockProvider 是模型提供者的实现，继承了 ModelProvider 协议
 class MockProvider(ModelProvider):
+    # complete 方法，用于完成对话
     async def complete(
         self,
         *,
@@ -162,6 +183,7 @@ class MockProvider(ModelProvider):
             output_tokens=len(text),
         )
 
+    # stream 方法，用于流式对话
     async def stream(
         self,
         *,
@@ -192,6 +214,8 @@ class MockProvider(ModelProvider):
 `MockProvider` 每次返回相同规则的结果。这样测试不会受模型随机性、网络或余额影响。
 
 ### 第四步：创建聊天服务
+
+接下来我们创建一个聊天服务，这个服务负责将请求转发给 Provider，并返回响应。
 
 创建 `app/services.py`：
 
@@ -226,7 +250,11 @@ class ChatService:
 
 ### 第五步：暴露聊天接口
 
-把 `app/main.py` 替换为：
+我们需要新增一个路由来暴露聊天接口，这个路由负责将请求转发给聊天服务，并返回响应。
+
+在这个服务中我们需要传入创建的 mock provider 实例。
+
+最后 `app/main.py` 的代码如下：
 
 ```python
 from fastapi import FastAPI
@@ -236,20 +264,22 @@ from app.schemas import ChatRequest, ChatResponse
 from app.services import ChatService
 
 app = FastAPI(title="Agent Platform API", version="0.1.0")
+# 创建聊天服务， 传入 mock provider 实例
 chat_service = ChatService(provider=MockProvider())
 
-
+# 健康检查接口
 @app.get("/health")
 async def health() -> dict[str, str]:
     return {"status": "ok"}
 
-
+# 聊天接口
 @app.post("/v1/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest) -> ChatResponse:
     return await chat_service.chat(request)
 ```
 
 重启 `uvicorn`，在 `/docs` 调用 `POST /v1/chat`：
+
 
 ```json
 {
@@ -259,16 +289,23 @@ async def chat(request: ChatRequest) -> ChatResponse:
 }
 ```
 
+可以直接使用 curl 来访问：
+```bash
+curl -X POST http://localhost:8000/v1/chat -H "Content-Type: application/json" -d '{"messages": [{"role": "user", "content": "你好"}]}'
+```
+
 预期响应会包含动态 `run_id` 和如下文本：
 
 ```json
 {
-  "text": "Mock 回复：我收到了『你好』",
-  "model": "mock-1"
+    "run_id":"b2cef04d-9748-4501-a182-bb433bf7b1fe",
+    "text":"Mock 回复：我收到了『你好』",
+    "model":"mock-1",
+    "input_tokens":2,
+    "output_tokens":16,
+    "latency_ms":0
 }
 ```
-
-### 本课需要理解的盲点
 
 - `run_id` 不是可有可无的 UUID。后续它用于查询任务状态、Trace、审批和 Replay。
 - Token 数字在 Mock Provider 中只是演示，真实 Provider 的 usage 才能用于计费。
@@ -281,5 +318,10 @@ async def chat(request: ChatRequest) -> ChatResponse:
 - 请求没有 `messages` 时返回 422；
 - 响应包含 `run_id`、模型和延迟；
 - 不需要 API Key 就能运行。
+
+
+### 本章小结
+
+本章我们学习了如何定义一个通用的模型提供者接口，并实现了一个 Mock Provider。通过这个 Mock Provider，我们可以在不依赖任何外部 API、不消耗一分钱的情况下，完成后续大多数后端和前端的开发与测试。等接口和流程都跑稳了，下一节再接真实模型。
 
 ---

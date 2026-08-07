@@ -4,11 +4,8 @@
 > 下一课：[第 2 课：先接 Mock Provider，再接真实模型](./lesson-02-mock-provider-real-model.md)
 >[课程代码](https://github.com/ricoNext/agent-platform/tree/chapter-01)
 
-### 你将完成什么
 
-创建 FastAPI 服务，提供 `GET /health`。这是后面所有章节的基础检查接口。
-
-### 为什么先做这个
+这节将会创建一个 FastAPI 服务，提供 `GET /health`。这是后面所有章节的基础检查接口。
 
 很多初学者第一次调用模型失败时，不知道问题出在 Python 环境、网络、路由、模型服务还是前端。健康检查能先证明：Python、FastAPI、路由和进程启动没有问题。
 
@@ -199,12 +196,8 @@ pytest -q
 - `/docs` 可打开；
 - `pytest -q` 通过。
 
-提交建议：
+### 本课小结
 
-```bash
-git init
-git add .
-git commit -m "chore: initialize FastAPI service"
-```
+本章我们学习了如何创建一个 FastAPI 服务，并为其编写健康检查接口和测试。通过这个健康检查接口，我们可以在不依赖任何外部 API、不消耗一分钱的情况下，完成后续大多数后端和前端的开发与测试。等接口和流程都跑稳了，下一节我们实现一个通用的模型提供者接口，并实现一个 Mock Provider 来测试我们的服务。
 
 ---
