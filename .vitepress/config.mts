@@ -210,7 +210,7 @@ const chapters = [
   },
 ];
 
-const sidebar = chapters.map((chapter) => ({
+const courseSidebar = chapters.map((chapter) => ({
   text: chapter.text,
   link: chapter.link,
   collapsed: true,
@@ -219,6 +219,16 @@ const sidebar = chapters.map((chapter) => ({
     link: `${chapter.link}${link}`,
   })),
 }));
+
+const foundationSidebar = [
+  {
+    text: "Agent 全栈基础知识",
+    items: [
+      { text: "专栏目录", link: "/foundations/" },
+      { text: "AI 协议", link: "/foundations/ai-protocols" },
+    ],
+  },
+];
 
 export default defineConfig({
   lang: "zh-CN",
@@ -238,6 +248,7 @@ export default defineConfig({
     siteTitle: "AI Agent 101",
     nav: [
       { text: "首页", link: "/" },
+      { text: "基础知识", link: "/foundations/" },
       {
         text: "课程",
         link: "/course/chapter-01-llm-gateway/lesson-01-build-testable-backend",
@@ -246,7 +257,10 @@ export default defineConfig({
       { text: "课件仓库", link: "https://github.com/ricoNext/Agent101" },
       { text: "项目仓库", link: "https://github.com/ricoNext/agent-platform" },
     ],
-    sidebar,
+    sidebar: {
+      "/course/": courseSidebar,
+      "/foundations/": foundationSidebar,
+    },
     search: {
       provider: "local",
       options: {

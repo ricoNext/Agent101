@@ -22,6 +22,13 @@
 
 整套课程围绕同一个持续演进的项目 **Agent Engineering Platform**（`agent-platform/`）展开。每一章只增加少量能力，最终交付一个可部署、可评测、可治理的全栈 Agent 平台。
 
+## Agent 全栈基础知识
+
+这里集中解释主线课程中反复出现的基础概念、协议和工程方法。专栏文章不占用主线课程编号，可以独立阅读。
+
+- [基础知识专栏目录](./foundations/index.md)
+- [同一个模型，为什么有多种 API？](./foundations/ai-protocols.md)
+
 ### [第一章：从零构建 LLM Gateway](./chapter-01-llm-gateway/index.md)
 
 > 稳定调用模型，网页流式返回结果。先做 Mock Provider 再接真实模型，先跑通再优化。
