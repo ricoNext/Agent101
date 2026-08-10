@@ -333,7 +333,56 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
 上面代码中，启动时通过 `create_provider(settings)` 注入 Provider；`/health` 还会返回当前使用的 `provider`，方便确认到底切没切过去。
 
-## 六、切换到真实服务
+## 六、第四步：同步更新 health 测试
+
+第 1 课写的 `tests/test_health.py`，断言的是：
+
+```python
+assert response.json() == {"status": "ok"}
+```
+
+现在 `/health` 多返回了 `provider` 字段。若不改测试，直接跑
+`pytest` 会失败——这正是测试该做的事：接口契约变了，旧断言立刻报警。
+
+把 `tests/test_health.py` 改成：
+
+```python
+from fastapi.testclient import TestClient
+
+from app.main import app
+
+
+def test_health_returns_ok() -> None:
+    client = TestClient(app)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok", "provider": "mock"}
+```
+
+这里断言 `provider` 为 `"mock"`，是因为默认配置（以及本课推荐的本地
+`.env`）使用 `MODEL_PROVIDER=mock`。测试不依赖真实 API Key，也不该去连外部
+模型服务。
+
+改完后运行：
+
+```bash
+pytest -q
+```
+
+预期结果至少包含 health 这条通过。若你本地 `.env` 已经改成
+`openai_compatible`，先改回 `mock` 再跑测试，或临时用环境变量覆盖：
+
+```bash
+MODEL_PROVIDER=mock pytest -q
+```
+
+注意：`get_settings()` 用了 `@lru_cache`。若同一次 Python 进程里先读过别的
+配置，缓存可能还在。用 `pytest` 时通常是新进程，一般没问题；若在交互环境里改
+`.env` 后测不准，重启进程即可。
+
+## 七、切换到真实服务
 
 至此，代码部分就完成了。要切换到真实模型，只需修改 `.env`：
 
@@ -346,7 +395,7 @@ MODEL_NAME=你的模型名
 
 然后重启 `uvicorn`。如果失败，按下面顺序排查：
 
-> 还记得如何 启动服务吗？ 
+> 还记得如何启动服务吗？
 
 ```bash
 # 每次新开一个终端、要跑这个项目时执行一次   用来激活虚拟环境
@@ -363,7 +412,7 @@ uvicorn app.main:app --reload --port 8000
 
 需要强调一下：不要把真实 Key 粘贴到截图、代码或 Git 提交中。
 
-## 七、验证 `/v1/chat`
+## 八、验证 `/v1/chat`
 
 服务启动后，先确认 `/health` 正常：
 
@@ -439,21 +488,26 @@ curl -i \
   -d '{}'
 ```
 
-## 八、本课验收
+## 九、本课验收
 
-完成本课后，请确认以下四项：
+完成本课后，请确认以下五项：
 
 - `.env` 已加入 `.gitignore`，本地可用 `MODEL_PROVIDER=mock` 继续开发
 - `create_provider` 能按配置返回 Mock 或 OpenAI-compatible Provider
 - `/health` 能返回当前 `provider`
+- `tests/test_health.py` 已同步断言 `provider`，`pytest -q` 通过
 - 有 Key 时，改环境变量即可切到真实模型，无需改业务代码
 
-## 九、小结
+## 十、小结
 
-今天就讲到这里。这一课我们做了三件事：用 `.env` 管理模型配置，实现 OpenAI-compatible 的 Provider，再用工厂函数按配置选择 Mock 或真实服务。
+今天就讲到这里。这一课我们做了四件事：用 `.env` 管理模型配置，实现
+OpenAI-compatible 的 Provider，用工厂函数按配置选择 Mock 或真实服务，并同步
+更新了 `/health` 的自动化测试。
 
 改环境变量就能切换 Provider，业务代码一行不用动。下一篇教程将讲解结构化输出和错误边界。
 
 如果你看到了结尾，说明你已经把「可替换的真实模型接入」这一环接上了。下一课见。
+
+本节代码仓库地址：[第三课代码](https://github.com/ricoNext/agent-platform/tree/chapter-03)
 
 ---

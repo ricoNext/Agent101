@@ -395,4 +395,5 @@ curl -X POST http://localhost:8000/v1/chat -H "Content-Type: application/json" -
 
 如果你看到了结尾，说明你已经有了一条可测试、可替换的模型调用链路。下一课见。
 
+本节代码仓库地址：[第二课代码](https://github.com/ricoNext/agent-platform/tree/chapter-02)
 ---
