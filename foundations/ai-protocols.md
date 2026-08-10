@@ -1,5 +1,7 @@
 # 同一个模型，为什么有多种 API？
 
+![](https://neptune-ipc.oss-cn-shenzhen.aliyuncs.com/img/20260808113952207.png)
+
 在对接大模型 API 时，填写 `base_url` 往往不只有一种选择。
 
 以 DeepSeek API 为例，它同时提供 OpenAI-compatible 和 Anthropic-compatible 两种入口：

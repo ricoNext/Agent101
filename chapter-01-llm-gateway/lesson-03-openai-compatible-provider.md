@@ -50,23 +50,24 @@ from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
+# 配置类
 class Settings(BaseSettings):
+    # 获取配置字段
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    model_provider: str = "mock"
-    model_base_url: str = ""
-    model_api_key: str = ""
-    model_name: str = "mock-1"
-    model_timeout_seconds: float = 30.0
+    model_provider: str = "mock" # 模型提供者
+    model_base_url: str = "" # 模型基础URL
+    model_api_key: str = "" # 模型API密钥
+    model_name: str = "mock-1" # 模型名称
+    model_timeout_seconds: float = 30.0 # 模型超时时间
 
-
+# 缓存配置
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
 ```
 
-下面解释一下上面代码的关键点。
+解释一下上面代码的关键点。
 
 **（1）`pydantic-settings` 的 `BaseSettings`**
 
@@ -78,7 +79,7 @@ def get_settings() -> Settings:
 
 `@lru_cache` 是 `functools` 提供的装饰器，意思是「最近最少使用缓存」。用在 `get_settings()` 上，表示第一次调用时创建 `Settings` 对象并缓存，后续调用直接返回缓存结果。好处是整个应用共享同一份配置，不会反复读取 `.env` 文件。
 
-接着，创建 `.env.example`：
+接着，创建 `.env.example`（和 app文件同目录）：
 
 ```text
 MODEL_PROVIDER=mock
@@ -109,18 +110,31 @@ cp .env.example .env
 
 这一节就来看看，如何实现真正调用模型服务的 Provider。
 
-创建 `app/providers/openai_compatible.py`：
+创建 `app/providers/openai_compatible.py`。为了便于理解，我们按功能逐段实现。
+
+### 1. 导入依赖
+
+先导入类型、HTTP 客户端，以及项目中已经定义好的 Provider 结果和消息模型：
 
 ```python
 from typing import Any, AsyncIterator
 
 import httpx
 
+# 导入基础Provider
 from app.providers.base import ProviderResult
+# 导入消息模型
 from app.schemas import ChatMessage
+```
 
+### 2. 定义 Provider 和初始化配置
 
+Provider 需要知道模型服务的地址、API Key、默认模型和请求超时时间：
+
+```python
+# 定义OpenAICompatible 协议类型的Provider
 class OpenAICompatibleProvider:
+    # 初始化配置
     def __init__(
         self,
         *,
@@ -133,7 +147,15 @@ class OpenAICompatibleProvider:
         self.api_key = api_key
         self.default_model = default_model
         self.timeout_seconds = timeout_seconds
+```
 
+这里用 `rstrip("/")` 去掉基础地址末尾可能存在的 `/`，避免拼接接口路径时出现双斜杠。
+
+### 3. 构造请求体和请求头
+
+非流式请求和流式请求的请求体结构基本一致，只有 `stream` 字段不同。因此可以抽出一个 `_payload()` 方法统一构造：
+
+```python
     def _payload(
         self,
         messages: list[ChatMessage],
@@ -145,19 +167,31 @@ class OpenAICompatibleProvider:
             "messages": [message.model_dump() for message in messages],
             "stream": stream,
         }
+```
 
+再单独封装请求头：
+
+```python
     def _headers(self) -> dict[str, str]:
         return {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
+```
 
+### 4. 实现非流式调用
+
+`complete()` 发送一次普通请求，读取响应中的 `choices[0].message.content`，再转换成项目内部统一的 `ProviderResult`：
+
+```python
+   # 非流式请求
     async def complete(
         self,
         *,
         messages: list[ChatMessage],
         model: str | None = None,
     ) -> ProviderResult:
+        # 使用 httpx 库发送请求，并处理响应
         async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
             response = await client.post(
                 f"{self.base_url}/chat/completions",
@@ -166,50 +200,65 @@ class OpenAICompatibleProvider:
             )
             response.raise_for_status()
             body = response.json()
-
+        # 处理响应
         choices = body.get("choices", [])
+        # 如果响应中没有 choices，则抛出异常
         if not choices:
             raise ValueError("provider response does not contain choices")
         text = choices[0].get("message", {}).get("content")
+        # 如果响应中没有 message content，则抛出异常
         if not isinstance(text, str):
             raise ValueError("provider response does not contain message content")
-
+        # 处理 usage
         usage = body.get("usage", {})
+        # 返回 ProviderResult
         return ProviderResult(
             text=text,
             model=body.get("model", model or self.default_model),
             input_tokens=usage.get("prompt_tokens"),
             output_tokens=usage.get("completion_tokens"),
         )
+```
 
+这里的两个校验很重要：如果服务没有返回 `choices`，或者消息内容不是字符串，就主动抛出异常，而不是让错误数据继续传到业务层。
+
+### 5. 实现流式调用
+
+`stream()` 使用 HTTPX 的流式接口读取 SSE 响应。每一行以 `data: ` 开头时，解析其中的 JSON，并逐段返回文本：
+
+```python
+    # 流式请求
     async def stream(
         self,
         *,
         messages: list[ChatMessage],
         model: str | None = None,
     ) -> AsyncIterator[str]:
-        async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
-            async with client.stream(
+        # 使用 httpx 库发送请求，并处理响应
+        async with (
+            httpx.AsyncClient(timeout=self.timeout_seconds) as client,
+            client.stream(
                 "POST",
                 f"{self.base_url}/chat/completions",
                 headers=self._headers(),
                 json=self._payload(messages, model, stream=True),
-            ) as response:
-                response.raise_for_status()
-                async for line in response.aiter_lines():
-                    if not line.startswith("data: "):
-                        continue
-                    data = line.removeprefix("data: ")
-                    if data == "[DONE]":
-                        return
-                    chunk = __import__("json").loads(data)
-                    delta = chunk.get("choices", [{}])[0].get("delta", {})
-                    text = delta.get("content")
-                    if isinstance(text, str) and text:
-                        yield text
+            ) as response,
+        ):
+            response.raise_for_status()
+            async for line in response.aiter_lines():
+                if not line.startswith("data: "):
+                    continue
+                data = line.removeprefix("data: ")
+                if data == "[DONE]":
+                    return
+                chunk = __import__("json").loads(data)
+                delta = chunk.get("choices", [{}])[0].get("delta", {})
+                text = delta.get("content")
+                if isinstance(text, str) and text:
+                    yield text
 ```
 
-上面代码中，`complete()` 发一次非流式请求，取出 `choices[0].message.content`；`stream()` 则按 SSE 行解析，逐段 `yield` 文本。
+这一部分的核心是识别 `[DONE]` 结束标记，并从每个数据块的 `choices[0].delta.content` 中取出新增文本。
 
 **（1）为什么叫 OpenAI-compatible？**
 
@@ -235,19 +284,23 @@ from app.providers.openai_compatible import OpenAICompatibleProvider
 
 
 def create_provider(settings: Settings) -> ModelProvider:
+    # 如果模型提供者为 mock，则返回 MockProvider
     if settings.model_provider == "mock":
         return MockProvider()
 
+    # 如果模型提供者为 openai_compatible，则返回 OpenAICompatibleProvider
     if settings.model_provider == "openai_compatible":
+        # 如果模型基础URL或API密钥为空，则抛出异常
         if not settings.model_base_url or not settings.model_api_key:
             raise ValueError("MODEL_BASE_URL and MODEL_API_KEY are required")
+        # 返回 OpenAICompatibleProvider
         return OpenAICompatibleProvider(
             base_url=settings.model_base_url,
             api_key=settings.model_api_key,
             default_model=settings.model_name,
             timeout_seconds=settings.model_timeout_seconds,
         )
-
+    # 如果模型提供者为其他值，则抛出异常
     raise ValueError(f"unsupported MODEL_PROVIDER: {settings.model_provider}")
 ```
 
@@ -293,6 +346,15 @@ MODEL_NAME=你的模型名
 
 然后重启 `uvicorn`。如果失败，按下面顺序排查：
 
+> 还记得如何 启动服务吗？ 
+
+```bash
+# 每次新开一个终端、要跑这个项目时执行一次   用来激活虚拟环境
+source .venv/bin/activate
+# 启动服务
+uvicorn app.main:app --reload --port 8000
+```
+
 1. URL 是否已经包含或不应包含 `/v1`
 2. API Key 是否有多余空格
 3. 模型名称是否存在
@@ -301,7 +363,83 @@ MODEL_NAME=你的模型名
 
 需要强调一下：不要把真实 Key 粘贴到截图、代码或 Git 提交中。
 
-## 七、本课验收
+## 七、验证 `/v1/chat`
+
+服务启动后，先确认 `/health` 正常：
+
+```bash
+curl http://localhost:8000/health
+```
+
+使用 Mock Provider 时，预期返回：
+
+```json
+{
+  "status": "ok",
+  "provider": "mock"
+}
+```
+
+接着发送一条聊天请求：
+
+```bash
+curl --fail-with-body \
+  -X POST http://localhost:8000/v1/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [
+      {
+        "role": "user",
+        "content": "请用一句话介绍自己"
+      }
+    ]
+  }'
+```
+
+预期响应至少包含以下字段：
+
+```json
+{
+  "run_id": "动态生成的 UUID",
+  "text": "Mock 回复：我收到了『请用一句话介绍自己』",
+  "model": "mock-1",
+  "input_tokens": 9,
+  "output_tokens": 16,
+  "latency_ms": 0
+}
+```
+
+其中 `run_id`、Token 数量和延迟可能因实现不同而变化，重点检查：
+
+- HTTP 状态码为 `200`
+- `run_id` 不为空
+- `text` 不为空
+- `model` 与当前配置一致
+- `latency_ms` 大于或等于 `0`
+
+如果要验证真实模型，只需要修改 `.env` 并重启服务：
+
+```text
+MODEL_PROVIDER=openai_compatible
+MODEL_BASE_URL=https://你的服务地址/v1
+MODEL_API_KEY=你的密钥
+MODEL_NAME=你的模型名
+```
+
+再次执行同一条 `curl` 命令。此时 `/health` 中的 `provider` 应变为
+`openai_compatible`，响应中的 `text` 也应来自真实模型。
+
+最后，验证请求校验是否生效。缺少必填的 `messages` 字段时，应返回
+`422 Unprocessable Entity`：
+
+```bash
+curl -i \
+  -X POST http://localhost:8000/v1/chat \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+## 八、本课验收
 
 完成本课后，请确认以下四项：
 
@@ -310,7 +448,7 @@ MODEL_NAME=你的模型名
 - `/health` 能返回当前 `provider`
 - 有 Key 时，改环境变量即可切到真实模型，无需改业务代码
 
-## 八、小结
+## 九、小结
 
 今天就讲到这里。这一课我们做了三件事：用 `.env` 管理模型配置，实现 OpenAI-compatible 的 Provider，再用工厂函数按配置选择 Mock 或真实服务。
 
