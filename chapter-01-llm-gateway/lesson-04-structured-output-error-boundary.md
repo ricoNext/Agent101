@@ -3,7 +3,7 @@
 > 所属章节：[第 1 章：从零构建 LLM Gateway](./index.md)  
 > 上一课：[第 3 课：接入 OpenAI-compatible 模型服务](./lesson-03-openai-compatible-provider.md)  
 > 下一课：[第 5 课：实现 SSE 流式接口](./lesson-05-sse-streaming-api.md)  
-> [课程代码](https://github.com/ricoNext/agent-platform/tree/chapter-01)
+> [课程代码](https://github.com/ricoNext/agent-platform/tree/chapter-04)
 
 ## 一、前言
 
@@ -192,7 +192,4 @@ pytest -q
 模型会说话，不代表它会按契约交付。先把校验边界立住，后面接 `/v1/summaries` 和自动重试才会稳。下一篇教程将讲解如何实现 SSE 流式接口。
 
 如果你看到了结尾，说明你已经把「结构化输出」的错误边界立住了。下一课见。
-
-本节代码仓库地址：[第四课代码](https://github.com/ricoNext/agent-platform/tree/chapter-04)
-
 ---

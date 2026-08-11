@@ -3,7 +3,7 @@
 > 所属章节：[第 1 章：从零构建 LLM Gateway](./index.md)  
 > 上一课：[第 2 课：先接 Mock Provider，再接真实模型](./lesson-02-mock-provider-real-model.md)  
 > 下一课：[第 4 课：结构化输出和错误边界](./lesson-04-structured-output-error-boundary.md)  
-> [课程代码](https://github.com/ricoNext/agent-platform/tree/chapter-01)
+> [课程代码](https://github.com/ricoNext/agent-platform/tree/chapter-03)
 
 ## 一、前言
 
@@ -507,7 +507,5 @@ OpenAI-compatible 的 Provider，用工厂函数按配置选择 Mock 或真实�
 改环境变量就能切换 Provider，业务代码一行不用动。下一篇教程将讲解结构化输出和错误边界。
 
 如果你看到了结尾，说明你已经把「可替换的真实模型接入」这一环接上了。下一课见。
-
-本节代码仓库地址：[第三课代码](https://github.com/ricoNext/agent-platform/tree/chapter-03)
 
 ---

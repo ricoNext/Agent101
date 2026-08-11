@@ -3,7 +3,7 @@
 > 所属章节：[第 1 章：从零构建 LLM Gateway](./index.md)  
 > 上一课：[第 1 课：建立一个可测试的后端](./lesson-01-build-testable-backend.md)  
 > 下一课：[第 3 课：接入 OpenAI-compatible 模型服务](./lesson-03-openai-compatible-provider.md)  
-> [课程代码](https://github.com/ricoNext/agent-platform/tree/chapter-01)
+> [课程代码](https://github.com/ricoNext/agent-platform/tree/chapter-02)
 
 ## 一、前言
 
@@ -395,5 +395,4 @@ curl -X POST http://localhost:8000/v1/chat -H "Content-Type: application/json" -
 
 如果你看到了结尾，说明你已经有了一条可测试、可替换的模型调用链路。下一课见。
 
-本节代码仓库地址：[第二课代码](https://github.com/ricoNext/agent-platform/tree/chapter-02)
 ---

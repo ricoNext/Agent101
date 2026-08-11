@@ -174,7 +174,7 @@
 
 | 分支 | 内容 | 说明 |
 |------|------|------|
-| `chapter-xx` | 各章代码（完成态） | 切到对应分支，就能拿到该阶段完整代码 |
+| `chapter-xx` | 各小节代码（完成态） | 切到对应分支，就能拿到该小节完整代码 |
 
 ```bash
 # 克隆代码仓库
@@ -182,7 +182,7 @@ git clone https://github.com/ricoNext/agent-platform.git
 
 # 从初始骨架开始
 
-# 查看第 1 章完整代码
+# 查看第 1 节课完整代码
 git checkout chapter-01
 ```
 

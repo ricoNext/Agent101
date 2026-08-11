@@ -255,6 +255,4 @@ pytest -q
 通过这个健康检查，你可以在不依赖任何外部 API、不消耗一分钱的情况下，验证 Python 环境、FastAPI 路由和进程启动都没有问题。下一篇教程将讲解如何实现一个通用的模型提供者接口，并用 Mock Provider 来测试服务。
 
 如果你看到了结尾，说明你已经完成了第 1 章最基础的一步。下一课见。
-
-本节代码仓库地址：[第一课代码](https://github.com/ricoNext/agent-platform/tree/chapter-01)
 ---
