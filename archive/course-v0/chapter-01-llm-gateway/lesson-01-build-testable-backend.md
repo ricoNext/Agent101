@@ -74,7 +74,6 @@ CMD 用户用 `.venv\Scripts\activate.bat`。
 fastapi==0.141.1
 uvicorn[standard]==0.52.1
 httpx==0.28.1
-httpx2==2.9.1
 pydantic==2.13.4
 pydantic-settings==2.14.2
 pytest==9.1.1
@@ -95,8 +94,7 @@ pip install -r requirements.txt
 
 - `fastapi==0.141.1`：`==` 表示精确版本锁定，确保团队成员安装的版本一致
 - `uvicorn[standard]==0.52.1`：`[standard]` 表示安装 uvicorn 的 "standard" 可选依赖组（包含 uvloop、httptools 等高性能组件）
-- `httpx`：后面调用 OpenAI-compatible 接口时用
-- `httpx2`：Starlette / FastAPI 的 `TestClient` 现在依赖它，不装会出现弃用警告
+- `httpx`：后面调用 OpenAI-compatible 接口时使用，FastAPI 的 `TestClient` 也基于它工作
 
 ## 四、第三步：创建应用文件
 
@@ -109,9 +107,9 @@ mkdir -p app tests
 touch app/__init__.py
 ```
 
-所谓 **`__init__.py`**，就是告诉 Python：「这个目录是一个**包（package）**，其他文件可以 `import` 它」。即使文件内容为空，这个标志也至关重要。
+所谓 **`__init__.py`**，就是明确告诉 Python 和开发工具：「这个目录是一个传统的包（package）」。即使文件内容为空，也能让项目结构、测试发现和类型检查更直观。
 
-创建后，你才能写 `from app.schemas import ChatRequest`——Python 会把 `app/` 当作包来查找里面的模块。没有 `__init__.py` 的目录只是一个普通文件夹，无法被 `import`。
+Python 3.3 以后支持没有 `__init__.py` 的 namespace package，因此“没有它就绝对不能导入”并不准确。本课程仍显式创建它，是为了避免不同启动目录和开发工具对包边界产生歧义。
 
 ### 4.2 编写 main.py
 
@@ -140,7 +138,7 @@ async def health() -> dict[str, str]:
 
 **（3）`async def health()`**
 
-`async def` 定义了一个**协程函数（coroutine）**。协程可以在等待 I/O 操作（如网络请求、数据库查询）时让出执行权，让程序同时处理其他任务。所有 FastAPI 路由函数都推荐用 `async def`。
+`async def` 定义了一个**协程函数（coroutine）**。协程可以在等待 I/O 操作（如网络请求、数据库查询）时让出执行权，让程序同时处理其他任务。需要等待异步 I/O 的 FastAPI 路由适合使用 `async def`；普通同步函数也可以使用 `def`，FastAPI 会在线程池中执行它。
 
 **（4）`-> dict[str, str]`**
 
@@ -185,7 +183,7 @@ uvicorn app.main:app --reload --port 8000
 pythonpath = .
 ```
 
-需要强调一下：pytest 9 起默认用 `importlib` 导入模式，不会自动把项目根目录加入 `sys.path`。没有这行配置时，`from app.main import app` 会报 `ModuleNotFoundError: No module named 'app'`。`pythonpath = .` 表示把当前目录（`apps/api`）加入模块搜索路径。
+`pythonpath = .` 表示把当前目录（`apps/api`）明确加入模块搜索路径。这样无论从本地终端还是后续自动化入口运行，`from app.main import app` 都有一致的导入基准。
 
 ### 5.2 编写测试
 

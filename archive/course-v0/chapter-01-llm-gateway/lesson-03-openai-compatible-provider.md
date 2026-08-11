@@ -47,19 +47,22 @@ OpenAI、DeepSeek、各类中转、本地 vLLM / Ollama 等，大多兼容同一
 
 ```python
 from functools import lru_cache
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 # 配置类
 class Settings(BaseSettings):
     # 获取配置字段
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    model_provider: str = "mock" # 模型提供者
-    model_base_url: str = "" # 模型基础URL
-    model_api_key: str = "" # 模型API密钥
-    model_name: str = "mock-1" # 模型名称
-    model_timeout_seconds: float = 30.0 # 模型超时时间
+    model_provider: Literal["mock", "openai_compatible"] = "mock"
+    model_base_url: str = ""
+    model_api_key: str = ""
+    model_name: str = "mock-1"
+    model_timeout_seconds: float = 30.0
+
 
 # 缓存配置
 @lru_cache
@@ -79,7 +82,7 @@ def get_settings() -> Settings:
 
 `@lru_cache` 是 `functools` 提供的装饰器，意思是「最近最少使用缓存」。用在 `get_settings()` 上，表示第一次调用时创建 `Settings` 对象并缓存，后续调用直接返回缓存结果。好处是整个应用共享同一份配置，不会反复读取 `.env` 文件。
 
-接着，创建 `.env.example`（和 app文件同目录）：
+接着，在 `apps/api` 根目录创建 `.env.example`，让它和 `requirements.txt`、`pytest.ini` 同级。不要把它放进 `app/`，因为课程中的启动命令会从 `apps/api` 读取 `.env`：
 
 ```text
 MODEL_PROVIDER=mock
@@ -117,12 +120,14 @@ cp .env.example .env
 先导入类型、HTTP 客户端，以及项目中已经定义好的 Provider 结果和消息模型：
 
 ```python
-from typing import Any, AsyncIterator
+import json
+from collections.abc import AsyncIterator
+from typing import Any
 
 import httpx
 
 # 导入基础Provider
-from app.providers.base import ProviderResult
+from app.providers.base import ProviderError, ProviderResult
 # 导入消息模型
 from app.schemas import ChatMessage
 ```
@@ -191,33 +196,53 @@ class OpenAICompatibleProvider:
         messages: list[ChatMessage],
         model: str | None = None,
     ) -> ProviderResult:
-        # 使用 httpx 库发送请求，并处理响应
-        async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
-            response = await client.post(
-                f"{self.base_url}/chat/completions",
-                headers=self._headers(),
-                json=self._payload(messages, model, stream=False),
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
+                response = await client.post(
+                    f"{self.base_url}/chat/completions",
+                    headers=self._headers(),
+                    json=self._payload(messages, model, stream=False),
+                )
+                response.raise_for_status()
+                body = response.json()
+
+            choices = body.get("choices", [])
+            if not choices:
+                raise ValueError("provider response does not contain choices")
+            text = choices[0].get("message", {}).get("content")
+            if not isinstance(text, str):
+                raise ValueError("provider response does not contain message content")
+            usage = body.get("usage") or {}
+            if not isinstance(usage, dict):
+                usage = {}
+
+            returned_model = body.get("model")
+            if not isinstance(returned_model, str):
+                returned_model = model or self.default_model
+
+            return ProviderResult(
+                text=text,
+                model=returned_model,
+                input_tokens=usage.get("prompt_tokens"),
+                output_tokens=usage.get("completion_tokens"),
             )
-            response.raise_for_status()
-            body = response.json()
-        # 处理响应
-        choices = body.get("choices", [])
-        # 如果响应中没有 choices，则抛出异常
-        if not choices:
-            raise ValueError("provider response does not contain choices")
-        text = choices[0].get("message", {}).get("content")
-        # 如果响应中没有 message content，则抛出异常
-        if not isinstance(text, str):
-            raise ValueError("provider response does not contain message content")
-        # 处理 usage
-        usage = body.get("usage", {})
-        # 返回 ProviderResult
-        return ProviderResult(
-            text=text,
-            model=body.get("model", model or self.default_model),
-            input_tokens=usage.get("prompt_tokens"),
-            output_tokens=usage.get("completion_tokens"),
-        )
+        except httpx.TimeoutException as error:
+            raise ProviderError("provider_timeout", "模型服务响应超时") from error
+        except httpx.RequestError as error:
+            raise ProviderError(
+                "provider_network_error",
+                "无法连接模型服务",
+            ) from error
+        except httpx.HTTPStatusError as error:
+            raise ProviderError(
+                "provider_http_error",
+                f"模型服务返回 HTTP {error.response.status_code}",
+            ) from error
+        except (AttributeError, IndexError, TypeError, ValueError) as error:
+            raise ProviderError(
+                "invalid_provider_response",
+                "模型服务返回了无法识别的数据",
+            ) from error
 ```
 
 这里的两个校验很重要：如果服务没有返回 `choices`，或者消息内容不是字符串，就主动抛出异常，而不是让错误数据继续传到业务层。
@@ -234,28 +259,48 @@ class OpenAICompatibleProvider:
         messages: list[ChatMessage],
         model: str | None = None,
     ) -> AsyncIterator[str]:
-        # 使用 httpx 库发送请求，并处理响应
-        async with (
-            httpx.AsyncClient(timeout=self.timeout_seconds) as client,
-            client.stream(
-                "POST",
-                f"{self.base_url}/chat/completions",
-                headers=self._headers(),
-                json=self._payload(messages, model, stream=True),
-            ) as response,
-        ):
-            response.raise_for_status()
-            async for line in response.aiter_lines():
-                if not line.startswith("data: "):
-                    continue
-                data = line.removeprefix("data: ")
-                if data == "[DONE]":
-                    return
-                chunk = __import__("json").loads(data)
-                delta = chunk.get("choices", [{}])[0].get("delta", {})
-                text = delta.get("content")
-                if isinstance(text, str) and text:
-                    yield text
+        try:
+            async with (
+                httpx.AsyncClient(timeout=self.timeout_seconds) as client,
+                client.stream(
+                    "POST",
+                    f"{self.base_url}/chat/completions",
+                    headers=self._headers(),
+                    json=self._payload(messages, model, stream=True),
+                ) as response,
+            ):
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    if not line.startswith("data: "):
+                        continue
+                    data = line.removeprefix("data: ")
+                    if data == "[DONE]":
+                        return
+                    chunk = json.loads(data)
+                    choices = chunk.get("choices") or []
+                    if not choices:
+                        continue
+                    delta = choices[0].get("delta", {})
+                    text = delta.get("content")
+                    if isinstance(text, str) and text:
+                        yield text
+        except httpx.TimeoutException as error:
+            raise ProviderError("provider_timeout", "模型服务响应超时") from error
+        except httpx.RequestError as error:
+            raise ProviderError(
+                "provider_network_error",
+                "无法连接模型服务",
+            ) from error
+        except httpx.HTTPStatusError as error:
+            raise ProviderError(
+                "provider_http_error",
+                f"模型服务返回 HTTP {error.response.status_code}",
+            ) from error
+        except (AttributeError, IndexError, TypeError, ValueError) as error:
+            raise ProviderError(
+                "invalid_provider_response",
+                "模型服务返回了无法识别的数据",
+            ) from error
 ```
 
 这一部分的核心是识别 `[DONE]` 结束标记，并从每个数据块的 `choices[0].delta.content` 中取出新增文本。
@@ -268,7 +313,7 @@ class OpenAICompatibleProvider:
 
 真实服务可能有不同字段。所以切换 Provider 时，建议先用一条普通请求检查响应，再按需扩展适配器。
 
-注意：`stream()` 里用 `__import__("json").loads(data)` 是为了少写一行 import；实际项目里更常见的写法是文件顶部 `import json`。两种都可以，关键是解析逻辑要对。
+流式响应偶尔会出现不含 `choices` 的统计或控制事件，因此先检查列表是否为空，再读取第一个增量。JSON 解析失败、超时和 HTTP 错误都不应该在 Provider 中伪装成正常文本；它们会继续抛给上层，由第四、第五课的错误边界转换为明确失败。
 
 ## 五、第三步：根据配置创建 Provider
 
@@ -309,16 +354,42 @@ def create_provider(settings: Settings) -> ModelProvider:
 把 `app/main.py` 改为：
 
 ```python
-from fastapi import FastAPI
+import logging
+import uuid
+
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 from app.config import get_settings
+from app.providers.base import ProviderError
 from app.providers.factory import create_provider
-from app.schemas import ChatRequest, ChatResponse
+from app.schemas import ChatRequest, ChatResponse, ErrorResponse
 from app.services import ChatService
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Agent Platform API", version="0.1.0")
 settings = get_settings()
 chat_service = ChatService(provider=create_provider(settings))
+
+
+@app.exception_handler(ProviderError)
+async def handle_provider_error(
+    _request: Request,
+    error: ProviderError,
+) -> JSONResponse:
+    run_id = str(uuid.uuid4())
+    logger.error(
+        "provider call failed",
+        extra={"run_id": run_id, "error_code": error.code},
+        exc_info=(type(error), error, error.__traceback__),
+    )
+    payload = ErrorResponse(
+        code=error.code,
+        message=error.message,
+        run_id=run_id,
+    )
+    return JSONResponse(status_code=502, content=payload.model_dump())
 
 
 @app.get("/health")
@@ -332,6 +403,8 @@ async def chat(request: ChatRequest) -> ChatResponse:
 ```
 
 上面代码中，启动时通过 `create_provider(settings)` 注入 Provider；`/health` 还会返回当前使用的 `provider`，方便确认到底切没切过去。
+
+`ProviderError` 统一映射为 `502` 和 `ErrorResponse`。返回给客户端的 `run_id` 同时写入服务端日志，用于关联本次失败；底层异常只进入服务端日志，不把响应体或密钥信息暴露给调用方。
 
 ## 六、第四步：同步更新 health 测试
 
@@ -490,11 +563,12 @@ curl -i \
 
 ## 九、本课验收
 
-完成本课后，请确认以下五项：
+完成本课后，请确认以下六项：
 
 - `.env` 已加入 `.gitignore`，本地可用 `MODEL_PROVIDER=mock` 继续开发
 - `create_provider` 能按配置返回 Mock 或 OpenAI-compatible Provider
 - `/health` 能返回当前 `provider`
+- Provider 超时、HTTP 错误和非法响应会返回脱敏的 `502`
 - `tests/test_health.py` 已同步断言 `provider`，`pytest -q` 通过
 - 有 Key 时，改环境变量即可切到真实模型，无需改业务代码
 
