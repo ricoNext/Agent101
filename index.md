@@ -10,7 +10,7 @@ hero:
   actions:
     - theme: brand
       text: 开始第一章
-      link: /course/chapter-01-llm-gateway/
+      link: /course/core/chapter-01-llm-gateway/
 features:
   - icon:
       src: /icons/path.svg
@@ -20,8 +20,8 @@ features:
   - icon:
       src: /icons/curriculum.svg
       alt: 课程内容图标
-    title: 57 节可执行课程
-    details: 每节课都有目标、实现步骤、预期结果、故障演练和验收标准，适合边学边做。
+    title: 七章核心课程
+    details: 96 个建议课时围绕七个工程里程碑展开，并通过综合项目形成完整作品集。
   - icon:
       src: /icons/engineering.svg
       alt: 工程实践图标
@@ -39,12 +39,12 @@ features:
   </div>
   <div class="home-overview__stats">
     <div>
-      <strong>9</strong>
-      <span>个工程阶段</span>
+      <strong>7</strong>
+      <span>个核心章节</span>
     </div>
     <div>
-      <strong>57</strong>
-      <span>节逐课讲义</span>
+      <strong>96</strong>
+      <span>个建议课时</span>
     </div>
     <div>
       <strong>1</strong>
@@ -59,50 +59,45 @@ features:
     <h2>从基础调用到完整产品</h2>
   </div>
   <div class="chapter-grid">
-    <a class="chapter-card" href="/course/chapter-01-llm-gateway/">
+    <a class="chapter-card" href="/course/core/chapter-01-llm-gateway/">
       <span>01</span>
       <strong>LLM Gateway</strong>
       <small>模型接入、结构化输出与流式对话</small>
     </a>
-    <a class="chapter-card" href="/course/chapter-02-tool-runtime-mcp/">
+    <a class="chapter-card" href="/course/core/chapter-02-tool-runtime-mcp/">
       <span>02</span>
       <strong>Tool Runtime 与 MCP</strong>
       <small>工具注册、权限、审批与审计</small>
     </a>
-    <a class="chapter-card" href="/course/chapter-03-agent-loop-codebase-agent/">
+    <a class="chapter-card" href="/course/core/chapter-03-agent-loop-codebase-agent/">
       <span>03</span>
       <strong>Agent Loop</strong>
       <small>任务、Checkpoint、Sandbox 与代码 Agent</small>
     </a>
-    <a class="chapter-card" href="/course/chapter-04-context-memory-codebase-rag/">
+    <a class="chapter-card" href="/course/core/chapter-04-context-memory-codebase-rag/">
       <span>04</span>
       <strong>Context、Memory 与 RAG</strong>
       <small>让 Agent 找到支持结论的代码证据</small>
     </a>
-    <a class="chapter-card" href="/course/chapter-05-multi-agent-a2a/">
+    <a class="chapter-card" href="/course/core/chapter-05-multi-agent-skills/">
       <span>05</span>
-      <strong>Multi-Agent 与 A2A</strong>
-      <small>任务拆分、协作协议与结果聚合</small>
+      <strong>Multi-Agent 与 Skill</strong>
+      <small>任务委托、上下文隔离与结果聚合</small>
     </a>
-    <a class="chapter-card" href="/course/chapter-06-agent-eval/">
+    <a class="chapter-card" href="/course/core/chapter-06-agent-eval/">
       <span>06</span>
       <strong>Agent Eval</strong>
       <small>Golden Dataset、Trace 与回归评测</small>
     </a>
-    <a class="chapter-card" href="/course/chapter-07-production-finops/">
+    <a class="chapter-card" href="/course/core/chapter-07-production-governance/">
       <span>07</span>
-      <strong>生产工程与 FinOps</strong>
-      <small>部署、可观测性、成本与回滚</small>
+      <strong>生产工程与治理</strong>
+      <small>部署、可观测性、成本、安全与回滚</small>
     </a>
-    <a class="chapter-card" href="/course/chapter-08-compliance-governance/">
-      <span>08</span>
-      <strong>合规与治理</strong>
-      <small>身份、脱敏、人工监督与 Kill Switch</small>
-    </a>
-    <a class="chapter-card" href="/course/chapter-09-comprehensive-project-portfolio/">
-      <span>09</span>
+    <a class="chapter-card" href="/course/capstone/">
+      <span>FINAL</span>
       <strong>综合项目与作品集</strong>
-      <small>冻结范围、交付产品、部署与答辩</small>
+      <small>业务方向二选一，完成交付、部署与答辩</small>
     </a>
   </div>
 </section>
@@ -114,8 +109,8 @@ features:
   </div>
   <ol>
     <li><a href="/course">先看课程总览</a>，了解每章和每节课的学习顺序。</li>
-    <li><a href="/course/chapter-01-llm-gateway/">进入第一章</a>，从一个可测试的后端开始搭建主项目。</li>
-    <li>遇到概念疑问时回到<a href="/course">课程总览</a>，确认它在整条主线中的位置。</li>
+    <li><a href="/course/core/chapter-01-llm-gateway/">进入第一章</a>，从可治理的模型调用开始搭建主项目。</li>
+    <li>遇到概念疑问时进入<a href="/foundations/">基础知识专栏</a>，再回到主线继续实践。</li>
   </ol>
 </section>
 

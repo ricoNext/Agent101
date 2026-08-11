@@ -124,8 +124,9 @@ touch app/providers/__init__.py
 再创建 `app/providers/base.py`：
 
 ```python
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
-from typing import AsyncIterator, Protocol
+from typing import Protocol
 
 from app.schemas import ChatMessage
 
@@ -137,6 +138,13 @@ class ProviderResult:
     model: str
     input_tokens: int | None
     output_tokens: int | None
+
+
+class ProviderError(Exception):
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+        self.message = message
 
 
 # ModelProvider 是模型提供者的协议，包括：
@@ -151,7 +159,7 @@ class ModelProvider(Protocol):
     ) -> ProviderResult:
         ...
 
-    async def stream(
+    def stream(
         self,
         *,
         messages: list[ChatMessage],
@@ -176,6 +184,8 @@ class ProviderResult:
 # 有 dataclass —— 一行 @dataclass 搞定上面所有
 ```
 
+`ProviderError` 是 Provider 层对外暴露的稳定错误。具体实现可以使用 HTTPX、某家 SDK 或本地推理引擎，但业务层只接收脱敏后的 `code` 和 `message`，不直接依赖底层异常类型。
+
 **（2）`class ModelProvider(Protocol)`**
 
 这定义了一个**协议类（Protocol）**。Protocol 是 Python 的「结构化类型」——它不要求继承，只要求实现类「拥有这些方法签名」。任何类只要实现了 `complete()` 和 `stream()`，就被视为满足 `ModelProvider` 协议，无需显式写成 `class Xxx(ModelProvider)`。这比抽象基类更灵活。
@@ -186,6 +196,8 @@ class ProviderResult:
 
 这是 Python 的省略号字面量（Ellipsis），这里用作占位符，表示「这个方法只是声明接口，没有具体实现」。
 
+注意 `stream()` 在 Protocol 中使用普通 `def`，因为调用它会立即得到 `AsyncIterator`；具体 Provider 仍然使用 `async def + yield` 实现异步生成器。如果在 Protocol 中写成不含 `yield` 的 `async def`，类型检查器会把它理解为“需要先 await 的协程”，与后面的 `async for` 不匹配。
+
 ## 四、第三步：实现 Mock Provider
 
 接下来实现一个 Mock Provider。这个实现非常简单，只是按固定规则返回文本。
@@ -194,7 +206,7 @@ class ProviderResult:
 
 ```python
 import asyncio
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
 
 from app.providers.base import ModelProvider, ProviderResult
 from app.schemas import ChatMessage

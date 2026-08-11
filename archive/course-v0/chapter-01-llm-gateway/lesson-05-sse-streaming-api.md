@@ -21,12 +21,13 @@
 
 所以今天接着往下讲：把字符流转成统一事件流。
 
-这一课只做四件事：
+这一课只做五件事：
 
 1. 定义事件编码函数
 2. 在 `ChatService` 里加流式方法
 3. 新增 `/v1/chat/stream` 接口并用 `curl` 验证
-4. 故意制造失败，确认能收到 `run.failed`
+4. 在结束事件中记录耗时和输出规模
+5. 故意制造失败，确认能收到 `run.failed`
 
 建议先跟着例子做一遍，再读文字说明。
 
@@ -82,10 +83,14 @@ def sse_event(
 在 `app/services.py` 中加入：
 
 ```python
-from collections.abc import AsyncIterator
+import logging
+import time
 import uuid
+from collections.abc import AsyncIterator
 
 from app.events import sse_event
+
+logger = logging.getLogger(__name__)
 
 
 class ChatService:
@@ -93,11 +98,13 @@ class ChatService:
 
     async def stream(self, request: ChatRequest) -> AsyncIterator[str]:
         run_id = str(uuid.uuid4())
+        started_at = time.perf_counter()
+        output_characters = 0
         yield sse_event(
             event="run.started",
             run_id=run_id,
             sequence=1,
-            data={"model": request.model or "default"},
+            data={"model": request.model},
         )
         sequence = 2
         try:
@@ -105,6 +112,7 @@ class ChatService:
                 messages=request.messages,
                 model=request.model,
             ):
+                output_characters += len(text)
                 yield sse_event(
                     event="message.delta",
                     run_id=run_id,
@@ -116,16 +124,21 @@ class ChatService:
                 event="run.completed",
                 run_id=run_id,
                 sequence=sequence,
-                data={},
+                data={
+                    "latency_ms": int((time.perf_counter() - started_at) * 1000),
+                    "output_characters": output_characters,
+                },
             )
-        except Exception as error:
+        except Exception:
+            logger.exception("stream model call failed", extra={"run_id": run_id})
             yield sse_event(
                 event="run.failed",
                 run_id=run_id,
                 sequence=sequence,
                 data={
                     "code": "model_call_failed",
-                    "message": str(error),
+                    "message": "模型调用失败，请稍后重试",
+                    "latency_ms": int((time.perf_counter() - started_at) * 1000),
                 },
             )
 ```
@@ -144,7 +157,9 @@ Provider 每吐出一段文本，就包装成一条增量事件。`sequence` 递
 
 不是……让连接默默断开；而是……主动给前端一个可处理的结束事件。
 
-注意：这是教学版。生产环境中错误信息要脱敏，不能把 Provider 返回的所有内容直接给浏览器。
+结束事件记录本次流式调用的耗时和输出字符数。当前最小 Provider 协议只产出文本，没有可靠的流式 usage，因此这里不把字符数冒充 Token；以后扩展 Provider 事件协议时，再接入服务商返回的真实 usage。
+
+服务端使用 `logger.exception()` 保存完整异常，浏览器只收到稳定错误码和脱敏文案。不能把 Provider 的响应体、URL 或鉴权信息直接返回给前端。
 
 ## 四、第三步：新增接口
 
@@ -164,7 +179,10 @@ async def stream_chat(request: ChatRequest) -> StreamingResponse:
     return StreamingResponse(
         chat_service.stream(request),
         media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache"},
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
     )
 ```
 
@@ -178,9 +196,9 @@ async def stream_chat(request: ChatRequest) -> StreamingResponse:
 
 声明这是 SSE。浏览器和很多客户端会按事件流去读。
 
-**（3）`Cache-Control: no-cache`**
+**（3）禁止缓存和代理缓冲**
 
-避免中间层把流式响应缓存成静态结果。
+`Cache-Control: no-cache` 避免缓存事件流，`X-Accel-Buffering: no` 提示常见反向代理不要攒够一批数据再返回。生产部署时仍要核对实际网关的流式配置。
 
 下面用 `curl` 测一下：
 
@@ -209,6 +227,7 @@ curl -N -X POST http://127.0.0.1:8000/v1/chat/stream \
 - `/v1/chat/stream` 返回 SSE
 - 事件顺序从 `run.started` 开始，以 `run.completed` 或 `run.failed` 结束
 - 每个事件有同一个 `run_id` 和递增 `sequence`
+- `run.completed` 包含 `latency_ms` 和 `output_characters`
 - 失败也会发送一个可处理事件
 
 ## 七、小结
@@ -218,6 +237,7 @@ curl -N -X POST http://127.0.0.1:8000/v1/chat/stream \
 - 定义统一事件编码
 - 在服务层翻译 Provider 字符流
 - 暴露 `/v1/chat/stream`
+- 在结束事件记录耗时和输出规模
 - 验证失败也会发 `run.failed`
 
 前端只认你的协议，不认某一家 Provider 的原始格式——换模型时，页面逻辑才站得住。下一篇教程将讲解如何创建前端流式对话页。
