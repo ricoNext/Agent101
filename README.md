@@ -2,7 +2,7 @@
 
 AI Agent 101 是一门面向后端、全栈和平台工程师的项目制课程。课程围绕同一个 **Agent Engineering Platform** 持续演进，目标不是堆叠互不相关的 Demo，而是完成一套可运行、可评测、可治理、可部署的 Agent 工程平台。
 
-课程规划以 [goal.md](./goal.md) 为准。当前仓库先完成课程信息架构重组，具体课次与讲义内容将按新目录逐步设计。
+课程规划以 [goal.md](./goal.md) 为准。信息架构已重组完成，讲义按章节顺序持续更新。
 
 ## 课程结构
 
@@ -15,20 +15,40 @@ AI Agent 101 是一门面向后端、全栈和平台工程师的项目制课程�
 
 基础知识专栏独立于主线，用于补充课程中反复出现的概念，不占核心课时。
 
+## 更新进度
+
+状态说明：`已完成` 表示课次讲义已可阅读；`进行中` 表示目录已定、部分课次已写；`仅大纲` 表示只有章节总览，课次正文待写。
+
+| 板块 | 状态 | 进度说明 |
+| --- | --- | --- |
+| [第一章 · LLM Gateway](./course/core/chapter-01-llm-gateway/index.md) | 已完成 | 第 1–10 课讲义已完成 |
+| [第二章 · Tool Runtime / MCP](./course/core/chapter-02-tool-runtime-mcp/index.md) | 进行中 | 第 11 课已完成；第 12–20 课待更新 |
+| [第三章 · Agent Loop / Codebase Agent](./course/core/chapter-03-agent-loop-codebase-agent/index.md) | 仅大纲 | 章节目标与模块已定，课次待设计 |
+| [第四章 · Context / Memory / RAG](./course/core/chapter-04-context-memory-codebase-rag/index.md) | 仅大纲 | 章节目标与模块已定，课次待设计 |
+| [第五章 · Multi-Agent / Skill](./course/core/chapter-05-multi-agent-skills/index.md) | 仅大纲 | 章节目标与模块已定，课次待设计 |
+| [第六章 · Agent Eval](./course/core/chapter-06-agent-eval/index.md) | 仅大纲 | 章节目标与模块已定，课次待设计 |
+| [第七章 · 生产治理](./course/core/chapter-07-production-governance/index.md) | 仅大纲 | 章节目标与模块已定，课次待设计 |
+| [综合项目](./course/capstone/index.md) | 仅大纲 | 方向与作品集要求已定，项目讲义待写 |
+| [进阶专题](./course/advanced/index.md) | 仅大纲 | 专题目录待展开 |
+| [选修专题](./course/electives/index.md) | 仅大纲 | 专题目录待展开 |
+| [基础知识专栏](./foundations/index.md) | 进行中 | 已发布 1 篇（AI 协议） |
+
+当前主线写作重点：完成第二章剩余课次，再进入第三章。
+
 ## 七章核心课程
 
 建议核心课程共 **96 课时**，每章完成一个项目里程碑。
 
-| 章节 | 主题 | 建议课时 | 里程碑 |
-| --- | --- | ---: | --- |
-| [第一章](./course/core/chapter-01-llm-gateway/index.md) | LLM API、Prompt、Structured Output 与 Gateway | 10 | M1：LLM Gateway |
-| [第二章](./course/core/chapter-02-tool-runtime-mcp/index.md) | Function Calling、Tool Runtime 与 MCP | 14 | M2：Agent Tool Runtime |
-| [第三章](./course/core/chapter-03-agent-loop-codebase-agent/index.md) | Agent Loop、State、Harness 与 Codebase Agent | 18 | M3：Codebase Agent |
-| [第四章](./course/core/chapter-04-context-memory-codebase-rag/index.md) | Context Engineering、Memory 与 Codebase RAG | 14 | M4：Context & RAG |
-| [第五章](./course/core/chapter-05-multi-agent-skills/index.md) | Multi-Agent、Subagent 与 Skill | 12 | M5：Agent Collaboration |
-| [第六章](./course/core/chapter-06-agent-eval/index.md) | Agent Eval 工程 | 12 | M6：Agent Eval Platform |
-| [第七章](./course/core/chapter-07-production-governance/index.md) | 生产工程、FinOps、安全治理与部署 | 12 | M7：Production Ready |
-| 综合复盘 | 架构评审、作品集整理与答辩 | 4 | 最终项目答辩 |
+| 章节 | 主题 | 建议课时 | 里程碑 | 讲义状态 |
+| --- | --- | ---: | --- | --- |
+| [第一章](./course/core/chapter-01-llm-gateway/index.md) | LLM API、Prompt、Structured Output 与 Gateway | 10 | M1：LLM Gateway | 已完成 |
+| [第二章](./course/core/chapter-02-tool-runtime-mcp/index.md) | Function Calling、Tool Runtime 与 MCP | 14 | M2：Agent Tool Runtime | 进行中 |
+| [第三章](./course/core/chapter-03-agent-loop-codebase-agent/index.md) | Agent Loop、State、Harness 与 Codebase Agent | 18 | M3：Codebase Agent | 仅大纲 |
+| [第四章](./course/core/chapter-04-context-memory-codebase-rag/index.md) | Context Engineering、Memory 与 Codebase RAG | 14 | M4：Context & RAG | 仅大纲 |
+| [第五章](./course/core/chapter-05-multi-agent-skills/index.md) | Multi-Agent、Subagent 与 Skill | 12 | M5：Agent Collaboration | 仅大纲 |
+| [第六章](./course/core/chapter-06-agent-eval/index.md) | Agent Eval 工程 | 12 | M6：Agent Eval Platform | 仅大纲 |
+| [第七章](./course/core/chapter-07-production-governance/index.md) | 生产工程、FinOps、安全治理与部署 | 12 | M7：Production Ready | 仅大纲 |
+| 综合复盘 | 架构评审、作品集整理与答辩 | 4 | 最终项目答辩 | 待编写 |
 
 Eval、安全与治理贯穿七章，不等到课程末尾再集中补齐。
 

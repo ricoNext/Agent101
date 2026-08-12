@@ -9,18 +9,38 @@ AI Agent 101 以一个持续演进的 **Agent Engineering Platform** 为工程�
 3. 整理平台、业务项目、评测报告与工程文档，完成作品集和答辩。
 4. 根据个人方向补充进阶与选修专题，不让变化较快的协议阻塞主线学习。
 
+## 更新进度
+
+状态说明：`已完成` 表示课次讲义已可阅读；`进行中` 表示目录已定、部分课次已写；`仅大纲` 表示只有章节总览，课次正文待写。
+
+| 板块 | 状态 | 进度说明 |
+| --- | --- | --- |
+| [第一章 · LLM Gateway](./core/chapter-01-llm-gateway/) | 已完成 | 第 1–10 课讲义已完成 |
+| [第二章 · Tool Runtime / MCP](./core/chapter-02-tool-runtime-mcp/) | 进行中 | 第 11 课已完成；第 12–20 课待更新 |
+| [第三章 · Agent Loop / Codebase Agent](./core/chapter-03-agent-loop-codebase-agent/) | 仅大纲 | 章节目标与模块已定，课次待设计 |
+| [第四章 · Context / Memory / RAG](./core/chapter-04-context-memory-codebase-rag/) | 仅大纲 | 章节目标与模块已定，课次待设计 |
+| [第五章 · Multi-Agent / Skill](./core/chapter-05-multi-agent-skills/) | 仅大纲 | 章节目标与模块已定，课次待设计 |
+| [第六章 · Agent Eval](./core/chapter-06-agent-eval/) | 仅大纲 | 章节目标与模块已定，课次待设计 |
+| [第七章 · 生产治理](./core/chapter-07-production-governance/) | 仅大纲 | 章节目标与模块已定，课次待设计 |
+| [综合项目](./capstone/) | 仅大纲 | 方向与作品集要求已定，项目讲义待写 |
+| [进阶专题](./advanced/) | 仅大纲 | 专题目录待展开 |
+| [选修专题](./electives/) | 仅大纲 | 专题目录待展开 |
+| [基础知识专栏](../foundations/) | 进行中 | 已发布 1 篇（AI 协议） |
+
+当前主线写作重点：完成第二章剩余课次，再进入第三章。
+
 ## 核心课程
 
-| 章节 | 主题 | 建议课时 | 项目里程碑 |
-| --- | --- | ---: | --- |
-| [第一章](./core/chapter-01-llm-gateway/) | LLM API、Prompt、Structured Output 与 Gateway | 10 | M1：LLM Gateway |
-| [第二章](./core/chapter-02-tool-runtime-mcp/) | Function Calling、Tool Runtime 与 MCP | 14 | M2：Agent Tool Runtime |
-| [第三章](./core/chapter-03-agent-loop-codebase-agent/) | Agent Loop、State、Harness 与 Codebase Agent | 18 | M3：Codebase Agent |
-| [第四章](./core/chapter-04-context-memory-codebase-rag/) | Context Engineering、Memory 与 Codebase RAG | 14 | M4：Context & RAG |
-| [第五章](./core/chapter-05-multi-agent-skills/) | Multi-Agent、Subagent 与 Skill | 12 | M5：Agent Collaboration |
-| [第六章](./core/chapter-06-agent-eval/) | Agent Eval 工程 | 12 | M6：Agent Eval Platform |
-| [第七章](./core/chapter-07-production-governance/) | 生产工程、FinOps、安全治理与部署 | 12 | M7：Production Ready |
-| 综合复盘 | 架构评审、作品集整理与答辩 | 4 | 最终项目答辩 |
+| 章节 | 主题 | 建议课时 | 项目里程碑 | 讲义状态 |
+| --- | --- | ---: | --- | --- |
+| [第一章](./core/chapter-01-llm-gateway/) | LLM API、Prompt、Structured Output 与 Gateway | 10 | M1：LLM Gateway | 已完成 |
+| [第二章](./core/chapter-02-tool-runtime-mcp/) | Function Calling、Tool Runtime 与 MCP | 14 | M2：Agent Tool Runtime | 进行中 |
+| [第三章](./core/chapter-03-agent-loop-codebase-agent/) | Agent Loop、State、Harness 与 Codebase Agent | 18 | M3：Codebase Agent | 仅大纲 |
+| [第四章](./core/chapter-04-context-memory-codebase-rag/) | Context Engineering、Memory 与 Codebase RAG | 14 | M4：Context & RAG | 仅大纲 |
+| [第五章](./core/chapter-05-multi-agent-skills/) | Multi-Agent、Subagent 与 Skill | 12 | M5：Agent Collaboration | 仅大纲 |
+| [第六章](./core/chapter-06-agent-eval/) | Agent Eval 工程 | 12 | M6：Agent Eval Platform | 仅大纲 |
+| [第七章](./core/chapter-07-production-governance/) | 生产工程、FinOps、安全治理与部署 | 12 | M7：Production Ready | 仅大纲 |
+| 综合复盘 | 架构评审、作品集整理与答辩 | 4 | 最终项目答辩 | 待编写 |
 
 核心课程共 **96 课时**。项目开发贯穿课堂，不额外重复建设另一套平台。
 
