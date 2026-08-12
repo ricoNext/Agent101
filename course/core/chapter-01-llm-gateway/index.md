@@ -1,13 +1,13 @@
 # 第一章：LLM API、Prompt、Structured Output 与 Gateway
 
-> 建议课时：10 课时  
+> 课时：10 课时  
 > 项目里程碑：M1 · LLM Gateway
 
 ## 章节定位
 
-本章完成从传统 HTTP API 调用到可治理 LLM 服务的迁移，只解决“如何稳定、统一、可观测地调用模型”。Function Calling、MCP 和 Agent Loop 从第二、三章开始，本章不提前混入。
+本章的目标是完成从传统 HTTP API 调用到可治理 LLM 服务的迁移，只解决“如何稳定、统一、可观测地调用模型”。Function Calling、MCP 和 Agent Loop 放在第二、三章，本章不提前涉及。
 
-十课始终建设同一个 `agent-platform`。每课都在上一课的代码基础上增加一项能力，最终形成后续所有 Agent 功能共同依赖的 Gateway。
+> 全课程的目的是搭建一个 `agent-platform` 平台的基础设施，每课都在上一课的代码基础上增加一项能力，最终形成后续所有 Agent 功能共同依赖的 Gateway。
 
 ## 学习目标
 
@@ -22,8 +22,8 @@
 7. 使用逻辑模型别名实现路由、有限重试和 fallback。
 8. 区分 Gateway 租户限流与 Provider 限流，并提供稳定错误协议。
 9. 设计带明确终态、顺序和取消传播的 SSE 事件流。
-10. 记录模型、Prompt、Schema、Token、Cost、Latency 和 Trace ID。
-11. 使用 Mock、Golden Tasks、Runner 和基线报告验证 Gateway。
+10. 记录模型、Prompt、Schema、Token、Cost、Latency(估算成本) 和 Trace ID。
+11. 使用 Mock、Golden Tasks(人工智能数据标注中的“黄金标准数据集”)、Runner 和基线报告验证 Gateway。
 
 ## 课程目录
 

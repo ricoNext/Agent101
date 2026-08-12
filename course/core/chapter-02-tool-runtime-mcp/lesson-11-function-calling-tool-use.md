@@ -1,9 +1,7 @@
 # 第 11 课：理解 Function Calling 与 Tool Use
 
 > 所属章节：[第二章：Function Calling、Tool Runtime 与 MCP](./index.md)
->
 > 上一课：[第 10 课：建立模型基线并完成 M1 验收](../chapter-01-llm-gateway/lesson-10-baseline-and-acceptance.md)
->
 > 下一课：[第 12 课：定义统一 Tool Schema](./lesson-12-unified-tool-schema.md)
 
 ## 一、你将完成什么
@@ -59,6 +57,8 @@ sequenceDiagram
     M-->>A: 生成面向用户的最终回答
     A-->>U: 订单正在配送
 ```
+
+![](https://neptune-ipc.oss-cn-shenzhen.aliyuncs.com/img/20260812142402748.png)
 
 这里最容易产生的误解是：模型返回了工具参数，就代表工具已经执行成功。
 

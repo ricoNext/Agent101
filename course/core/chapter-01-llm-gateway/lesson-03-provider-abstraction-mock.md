@@ -42,12 +42,15 @@ from pydantic import BaseModel, Field
 class ChatMessage(BaseModel):
     # 对话角色
     role: Literal["system", "user", "assistant"]
+    # 对话内容
     content: str = Field(min_length=1)
 
 
 # 对话请求返回结构
 class ChatRequest(BaseModel):
+    # 对话内容
     messages: list[ChatMessage] = Field(min_length=1)
+    # 模型名称
     model: str | None = None
 
 
@@ -139,7 +142,7 @@ class ProviderResult:
     input_tokens: int | None
     output_tokens: int | None
 
-
+# ProviderError 是模型提供者的错误，包括：错误码和错误消息
 class ProviderError(Exception):
     def __init__(self, code: str, message: str) -> None:
         super().__init__(message)
@@ -151,6 +154,7 @@ class ProviderError(Exception):
 # - complete 方法，用于完成对话
 # - stream 方法，用于流式对话
 class ModelProvider(Protocol):
+    # complete 方法，用于完成对话
     async def complete(
         self,
         *,
@@ -159,6 +163,7 @@ class ModelProvider(Protocol):
     ) -> ProviderResult:
         ...
 
+    # stream 方法，用于流式对话
     def stream(
         self,
         *,
