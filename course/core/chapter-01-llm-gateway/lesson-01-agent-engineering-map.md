@@ -148,13 +148,13 @@ agent-platform/
 ## 六、七个里程碑如何叠加
 
 ```text
-M1 LLM Gateway
-  -> M2 Tool Runtime
-  -> M3 Codebase Agent
-  -> M4 Context & RAG
-  -> M5 Agent Collaboration
-  -> M6 Agent Eval Platform
-  -> M7 Production Ready Platform
+M1 LLM Gateway 大模型网关
+  -> M2 Tool Runtime 工具运行时
+  -> M3 Codebase Agent 代码基础Agent
+  -> M4 Context & RAG 上下文与向量检索
+  -> M5 Agent Collaboration 多Agent协作
+  -> M6 Agent Eval Platform 多Agent评测平台
+  -> M7 Production Ready Platform 生产就绪平台
 ```
 
 每个里程碑都必须保持上一阶段可运行。下一章是在已有平台上增加能力，不是另起一个互不相关的示例仓库。
@@ -172,7 +172,7 @@ M1 LLM Gateway
 - Token、Cost、Latency 和 Trace ID 记录
 - 一份可以复现的模型调用基线报告
 
-第一章明确不做 Function Calling、MCP、Agent Loop、RAG 和 Multi-Agent。提前加入这些能力只会让 Gateway 的问题更难定位。
+第一章明确不做 Function Calling、MCP、Agent Loop、RAG 和 Multi-Agent。
 
 ## 八、课堂练习：画出边界
 

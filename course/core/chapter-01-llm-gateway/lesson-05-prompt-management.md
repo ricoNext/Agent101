@@ -3,6 +3,8 @@
 > 所属章节：[第一章：LLM API、Prompt、Structured Output 与 Gateway](./index.md)  
 > 上一课：[第 4 课：接入 OpenAI-compatible 模型服务](./lesson-04-openai-compatible-provider.md)  
 > 下一课：[第 6 课：建立 Structured Output 错误边界](./lesson-06-structured-output.md)
+> [参考代码基线](https://github.com/ricoNext/agent-platform/tree/chapter-04)
+
 
 ## 一、本课要解决的问题
 
@@ -69,28 +71,42 @@ from dataclasses import dataclass
 from app.schemas import ChatMessage
 
 
+# Prompt 渲染失败（缺变量或多余变量）
 class PromptRenderError(ValueError):
     pass
 
 
+# 渲染结果：带版本信息的消息列表，可直接交给 Provider
 @dataclass(frozen=True)
 class RenderedPrompt:
+    # 稳定任务 ID，例如 summary.basic
     prompt_id: str
+    # 该任务的具体行为版本
     version: str
+    # 渲染后的 system / user 消息
     messages: list[ChatMessage]
 
 
+# Prompt 模板定义；frozen=True 防止运行时被悄悄改写
 @dataclass(frozen=True)
 class PromptTemplate:
+    # 稳定任务 ID
     prompt_id: str
+    # 模板版本号
     version: str
+    # System Prompt：稳定角色、任务与约束
     system: str
+    # User 模板：用 {变量名} 占位，本次输入在此填入
     user_template: str
+    # 渲染前必须且只能提供的变量名集合
     required_variables: frozenset[str]
 
     def render(self, **variables: str) -> RenderedPrompt:
+        # 调用方实际传入的变量名
         provided = set(variables)
+        # 模板要求但未传入
         missing = self.required_variables - provided
+        # 传入了但模板未声明
         unexpected = provided - self.required_variables
 
         if missing:
@@ -101,6 +117,7 @@ class PromptTemplate:
             names = ", ".join(sorted(unexpected))
             raise PromptRenderError(f"unexpected prompt variables: {names}")
 
+        # 校验通过后再 format，避免残缺 Prompt 进入模型调用
         return RenderedPrompt(
             prompt_id=self.prompt_id,
             version=self.version,
@@ -125,9 +142,15 @@ class PromptTemplate:
 
 ## 五、建立 Prompt Registry
 
+如果 Prompt 只散落在各个服务函数里，版本切换、回归对比和权限审计都会变得困难：同一任务可能有多份拷贝，改一处漏一处；也无法用稳定的 `prompt_id + version` 做评测基线。
+
+Prompt Registry 把模板收成一张可查找的表。业务层只声明“用哪个任务的哪个版本、填哪些变量”，不直接拼字符串。这样模板可以先放在代码里，以后再迁到配置中心或数据库，调用方式保持不变。
+
+
 继续在 `app/prompts.py` 中加入：
 
 ```python
+# Prompt Registry 类，用于管理 Prompt 模板
 class PromptRegistry:
     def __init__(self, templates: list[PromptTemplate]) -> None:
         self._templates = {
@@ -138,6 +161,7 @@ class PromptRegistry:
         if len(self._templates) != len(templates):
             raise ValueError("duplicate prompt id and version")
 
+    # 渲染 Prompt
     def render(
         self,
         prompt_id: str,
@@ -149,7 +173,7 @@ class PromptRegistry:
             raise KeyError(f"prompt not found: {prompt_id}@{version}")
         return template.render(**variables)
 
-
+# 这里先定义一个技术文档摘要的 Prompt 模板
 SUMMARY_PROMPT_V1 = PromptTemplate(
     prompt_id="summary.basic",
     version="1.0.0",
@@ -163,7 +187,7 @@ SUMMARY_PROMPT_V1 = PromptTemplate(
     required_variables=frozenset({"source_text"}),
 )
 
-
+# Prompt Registry 实例，保存所有模板
 prompt_registry = PromptRegistry([SUMMARY_PROMPT_V1])
 ```
 
@@ -201,6 +225,13 @@ prompt_version=1.0.0
 
 建议使用语义化版本思路管理 Prompt：
 
+> [语义化版本](https://semver.org/lang/zh-CN/) 是语义化版本管理的规范，里面有很多语义化版本管理的技巧和最佳实践。
+> 
+> 版本格式：主版本号(Patch).次版本号(Minor).修订号(Revision)
+> - Patch：当你做了向下兼容的问题修正。
+> - Minor：当你做了向下兼容的功能性新增。
+> - Major：当你做了不兼容的 API 修改。
+
 | 变化 | 示例 | 版本建议 |
 | --- | --- | --- |
 | 不改变任务行为的文字修正 | 修正错别字 | Patch |
@@ -219,6 +250,10 @@ Prompt 变更流程应当是：
 第一章只保存版本和基础任务，第六章再实现完整 Eval Pipeline。
 
 ## 八、Few-shot 与任务拆解
+
+> [Prompt 工程](https://www.promptingguide.ai/) 是Prompt 工程的指南，里面有很多 Prompt 工程的技巧和最佳实践。
+
+[Few-shot](https://www.promptingguide.ai/techniques/fewshot) 是 Prompt 工程中的概念，指的是在 Prompt 里放少量「输入 → 期望输出」示例，帮模型对齐格式、分类规则或术语。
 
 Few-shot 适合用少量输入输出示例明确边界，尤其适用于分类、格式和术语映射。示例应满足：
 
@@ -252,6 +287,10 @@ Prompt 注入是输入不可信问题。它需要模型约束、代码校验、�
 ## 十、验证模板契约
 
 为 Prompt 模板建立最小契约检查：
+
+这里我们先补齐测试用例，后续会实现 Golden Tasks 的评测。
+
+代码写在 `tests/test_prompts.py` 中：
 
 ```python
 import pytest

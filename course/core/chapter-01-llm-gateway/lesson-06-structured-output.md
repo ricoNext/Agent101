@@ -3,21 +3,19 @@
 > 所属章节：[第一章：LLM API、Prompt、Structured Output 与 Gateway](./index.md)  
 > 上一课：[第 5 课：管理 Prompt 模板与版本](./lesson-05-prompt-management.md)  
 > 下一课：[第 7 课：实现可靠性策略与模型路由](./lesson-07-reliability-routing.md)  
-> [参考代码基线](https://github.com/ricoNext/agent-platform/tree/chapter-04)
+> [参考代码基线](https://github.com/ricoNext/agent-platform/tree/chapter-05)
 
 ## 一、前言
 
 前两课，我们已经接入 OpenAI-compatible Provider，并把 Prompt 从业务代码中独立出来。
 
-改一下环境变量，就能在 Mock 和真实模型之间切换；`POST /v1/chat` 接口也能返回一段普通文本。
+改一下环境变量，就能在 Mock 和真实模型之间切换；`POST /v1/chat` 也能返回一段普通文本。
 
 事情到这里，好像已经够用了。但做业务时，问题马上会来：
 
 **模型返回的是自然语言，程序需要的是结构化数据。**
 
-举例来说，你希望得到标题、摘要和关键词。
-
-模型可能写得很漂亮，也可能漏字段、多字段，甚至根本不是 JSON。
+举例来说，你希望得到标题、摘要和关键词。模型可能写得很漂亮，也可能漏字段、多字段，甚至根本不是 JSON。
 
 这时，如果直接把原文塞进下游逻辑，后面每一层都会变得不可靠。
 
@@ -41,9 +39,9 @@
 
 所谓**结构化输出**，就是要求模型按约定格式返回数据，再用 Schema 校验。
 
-字面上讲，它好像只是「让模型输出 JSON」；但是，更准确的说法是：先约定业务结构，再把模型输出约束进这个结构。
+字面上讲，它好像只是「让模型输出 JSON」。但是，更准确的说法是：先约定业务结构，再把模型输出约束进这个结构。
 
-先把 `app/schemas.py` 顶部的 Pydantic 导入改为：
+首先，把 `app/schemas.py` 顶部的 Pydantic 导入改为：
 
 ```python
 from pydantic import BaseModel, ConfigDict, Field
@@ -54,32 +52,46 @@ from pydantic import BaseModel, ConfigDict, Field
 ```python
 # 摘要请求
 class SummaryRequest(BaseModel):
+    # 文本
     text: str = Field(min_length=10, max_length=10_000)
 
 
-# 摘要响应
+# 摘要结果（业务真正关心的结构）
 class SummaryResult(BaseModel):
+    # 禁止模型返回任何额外字段
     model_config = ConfigDict(extra="forbid")
 
+    # 标题
     title: str = Field(min_length=1)
+    # 摘要
     summary: str = Field(min_length=1)
+    # 关键词
     keywords: list[str] = Field(min_length=1, max_length=5)
 
 
-# 摘要响应
+# 摘要接口对外响应
 class SummaryResponse(BaseModel):
+    # 请求 ID
     run_id: str
+    # Schema 版本
     schema_version: str = "summary.v1"
+    # 结果
     result: SummaryResult
+    # 模型
     model: str
+    # Prompt ID
     prompt_id: str
+    # Prompt 版本
     prompt_version: str
+    # 输入 Token
     input_tokens: int | None = None
+    # 输出 Token
     output_tokens: int | None = None
+    # 延迟毫秒
     latency_ms: int
 ```
 
-解释一下上面代码的关键点。
+上面代码中，关键点有三个。
 
 **（1）`SummaryRequest`**
 
@@ -87,29 +99,38 @@ class SummaryResponse(BaseModel):
 
 **（2）`SummaryResult`**
 
-这是业务真正关心的结果：标题、摘要、关键词。关键词至少 1 个、最多 5 个。缺字段、空字符串、类型不对或出现协议外字段，都应判定失败。`extra="forbid"` 可以避免模型悄悄增加未经业务确认的数据。
+这是业务真正关心的结果：标题、摘要、关键词。关键词至少 1 个、最多 5 个。缺字段、空字符串、类型不对，或出现协议外字段，都应判定失败。
+
+`extra="forbid"` 的作用很直接：防止模型悄悄塞进未经业务确认的数据。
 
 **（3）`SummaryResponse`**
 
-这是对外返回的完整响应。除了 `result`，还带上 `schema_version`、`run_id`、模型、Prompt ID、Prompt 版本、Token usage 和耗时。部分兼容服务不返回 usage，此时两个 Token 字段为 `null`，不能自行伪造计费数据。
+这是对外返回的完整响应。`result` 之外，还要带上这些字段：
+`schema_version`、`run_id`、模型、Prompt ID、Prompt 版本、Token usage 和耗时。
+
+需要说明的是：部分兼容服务不返回 usage。这时两个 Token 字段应为 `null`，不能自行伪造计费数据。
 
 必须牢记的是：Schema 定义的是「业务结构合法」，不是「看起来像 JSON 就行」。
 
 ### 2.1 三种结构化方式
 
+常见做法有三种：
+
 | 方式 | 约束发生在哪里 | 优点 | 风险与边界 |
 | --- | --- | --- | --- |
-| Prompt 要求 JSON | 模型指令 | 兼容面最广 | 只能引导，仍可能输出非法 JSON |
+| Prompt 要求 JSON | 模型指令 | 兼容面最广 | 只能引导，可能输出非法 JSON |
 | 原生 Structured Output | Provider 推理接口 | 模型生成阶段受 JSON Schema 约束 | 厂商字段不同，部分模型不支持 |
 | 工具参数强制结构化 | Function Calling 参数 | 参数通常按 Schema 生成 | 属于工具调用语义，第二章再接入 Runtime |
 
-支持原生 Structured Output 的 Adapter，应把 Pydantic Schema 转成 JSON Schema：
+支持原生 Structured Output 的 Adapter，应把 Pydantic Schema 转成 JSON Schema。
+
+例如：
 
 ```python
 summary_json_schema = SummaryResult.model_json_schema()
 ```
 
-然后根据能力矩阵映射到厂商请求。例如部分 OpenAI-compatible 服务使用：
+然后根据能力矩阵映射到厂商请求。举例来说，部分 OpenAI-compatible 服务会这样写：
 
 ```python
 payload["response_format"] = {
@@ -122,15 +143,24 @@ payload["response_format"] = {
 }
 ```
 
-这段字段不能无条件发送。Adapter 必须先检查当前模型是否声明 `structured_output=true`；不支持时回退到 Prompt JSON，但无论使用哪种生成方式，返回结果都必须再经过同一个 Pydantic 校验。模型原生约束降低失败率，不能替代业务校验。
+注意：这段字段不能无条件发送。Adapter 必须先检查当前模型是否声明 `structured_output=true`；不支持时，再回退到 Prompt JSON。
 
-工具参数也能强制模型生成结构，但第一章不为此引入 Tool Runtime。这里先理解职责边界：Structured Output 解决“模型返回什么业务数据”，Function Calling 解决“模型请求执行哪个工具”。不能为了得到 JSON，提前把普通业务响应伪装成工具执行。
+无论用哪种生成方式，返回结果都必须再经过同一个 Pydantic 校验。模型原生约束只能降低失败率，不能替代业务校验。
+
+工具参数也能强制模型生成结构，但第一章不为此引入 Tool Runtime。这里先分清职责：
+
+- Structured Output 解决「模型返回什么业务数据」
+- Function Calling 解决「模型请求执行哪个工具」
+
+不能为了得到 JSON，提前把普通业务响应伪装成工具执行。
 
 ## 三、第二步：先实现不依赖模型的校验函数
 
-接下来，先不要急着接模型。把「模型返回的原始文本」解析成 `SummaryResult`，这件事可以单独做，也更容易写测试。
+接下来，先不要急着接模型。
 
-创建 `app/structured.py`：
+把「模型返回的原始文本」解析成 `SummaryResult`，这件事可以单独做，也更容易写测试。
+
+创建 `app/structured.py`，作为结构化输出的校验函数：
 
 ```python
 import json
@@ -143,6 +173,7 @@ from app.schemas import SummaryResult
 # 结构化输出错误
 class StructuredOutputError(Exception):
     pass
+
 
 # 解析摘要
 def parse_summary(raw_text: str) -> SummaryResult:
@@ -165,7 +196,7 @@ def parse_summary(raw_text: str) -> SummaryResult:
 
 **（1）`json.loads(raw_text)`**
 
-先判断是不是合法 JSON。如果模型返回普通句子、半截括号、或夹杂解释文字，这里就会失败。
+先判断是不是合法 JSON。如果模型返回普通句子、半截括号，或夹杂解释文字，这里就会失败。
 
 **（2）`SummaryResult.model_validate(payload)`**
 
@@ -173,13 +204,15 @@ def parse_summary(raw_text: str) -> SummaryResult:
 
 这两种失败，都统一包装成 `StructuredOutputError`。
 
-对调用方来说，不需要区分「解析挂了」还是「结构不对」的底层异常类型；它只需要知道：这次结构化输出不可用。
+对调用方来说，不需要区分「解析挂了」还是「结构不对」的底层异常类型。它只需要知道：这次结构化输出不可用。
 
-需要说明的是：这里故意不依赖真实模型。好处很直接——测试稳定、失败原因清晰，下一步接入 `/v1/summaries` 时可以直接复用同一套校验。
+需要说明的是：这里故意不依赖真实模型。好处很直接——测试稳定、失败原因清晰。下一步接入 `/v1/summaries` 时，可以直接复用同一套校验。
 
 ## 四、第三步：让 Mock Provider 返回结构化摘要
 
-默认 Mock Provider 返回普通聊天文本，直接交给 `parse_summary()` 一定会失败。为了让没有 API Key 的同学也能完成本课，需要为摘要任务增加一个确定性 Mock 响应。
+默认 Mock Provider 返回普通聊天文本。如果直接交给 `parse_summary()`，一定会失败。
+
+为了让没有 API Key 的同学也能完成本课，需要为摘要任务增加一个确定性 Mock 响应。
 
 在 `app/providers/mock.py` 顶部增加导入：
 
@@ -226,9 +259,11 @@ async def complete(
     )
 ```
 
-这里的 `TASK: summarize_json` 是测试夹具标记，只用于让 Mock Provider 识别任务类型。真实 Provider 会接收整段系统提示词，不依赖 Mock 的分支逻辑。
+上面代码中，`TASK: summarize_json` 只是测试夹具标记，用来让 Mock Provider 识别任务类型。真实 Provider 会接收整段系统提示词，不依赖这个分支逻辑。
 
 ## 五、第四步：在服务层生成并解析摘要
+
+这一节就来看看，服务层怎么把 Prompt、Provider 和校验串起来。
 
 在 `app/services.py` 中扩展 Schema 导入，并引入解析函数：
 
@@ -266,7 +301,11 @@ async def summarize(self, request: SummaryRequest) -> SummaryResponse:
     )
 ```
 
-`ChatService` 仍然只依赖 `ModelProvider`。Mock 和真实模型走同一个调用入口，区别只在 Provider 返回的原始文本；进入业务层前，都必须经过 `parse_summary()`。
+上面代码中，`ChatService` 仍然只依赖 `ModelProvider`。Mock 和真实模型走同一个调用入口，区别只在 Provider 返回的原始文本。
+
+进入业务层前，都必须经过 `parse_summary()`。
+
+第七步会把这里的单次 `complete()` 换成带纠错的 `generate_summary()`。现在先把这条链路跑通。
 
 ## 六、第五步：暴露摘要接口
 
@@ -308,9 +347,11 @@ async def summarize(request: SummaryRequest) -> SummaryResponse:
     return await chat_service.summarize(request)
 ```
 
-这里使用 `502 Bad Gateway`，因为请求本身已经通过校验，失败发生在上游模型没有按约定返回结构化数据。普通 Provider 错误和结构化校验错误现在都返回 `ErrorResponse`，调用方不需要解析两种错误外壳。
+这里使用 `502 Bad Gateway`，因为请求本身已经通过校验，失败发生在上游模型没有按约定返回结构化数据。
 
-使用 Mock Provider 验证：
+普通 Provider 错误和结构化校验错误，现在都返回 `ErrorResponse`。调用方不需要解析两种错误外壳。
+
+使用 Mock Provider 验证。注意：请先把 `.env` 里的真实模型配置全部注释掉。我们现在只测试 Mock Provider。
 
 ```bash
 curl --fail-with-body \
@@ -318,6 +359,8 @@ curl --fail-with-body \
   -H "Content-Type: application/json" \
   -d '{"text":"结构化输出必须先经过 JSON 解析和业务 Schema 校验，才能进入后续业务流程。"}'
 ```
+
+也可以打开 `/docs`，在自动生成的接口文档里发同一条请求。
 
 预期响应结构如下：
 
@@ -350,6 +393,7 @@ import pytest
 
 from app.structured import StructuredOutputError, parse_summary
 
+
 # 测试解析摘要 - 接受合法 JSON
 def test_parse_summary_accepts_valid_json() -> None:
     result = parse_summary(
@@ -358,10 +402,12 @@ def test_parse_summary_accepts_valid_json() -> None:
 
     assert result.title == "测试"
 
+
 # 测试解析摘要 - 拒绝无效 JSON
 def test_parse_summary_rejects_invalid_json() -> None:
     with pytest.raises(StructuredOutputError):
         parse_summary("not json")
+
 
 # 测试解析摘要 - 拒绝错误的形状
 def test_parse_summary_rejects_wrong_shape() -> None:
@@ -369,6 +415,7 @@ def test_parse_summary_rejects_wrong_shape() -> None:
         parse_summary('{"title":"只有标题"}')
 
 
+# 测试解析摘要 - 拒绝协议外字段
 def test_parse_summary_rejects_extra_fields() -> None:
     with pytest.raises(StructuredOutputError):
         parse_summary(
@@ -388,7 +435,42 @@ pytest -q
 
 ## 八、第七步：实现有边界的纠错重试
 
-只有 Structured Output 校验失败时才进入纠错；超时、429 和 5xx 由下一课的 Provider 可靠性策略处理。两层不能各自无限重试，否则一次请求会产生不可控的调用次数。
+如果 JSON 能解析，但业务结构不合法，可以再给模型一次机会。这就叫纠错重试。
+
+只有 Structured Output 校验失败时，才进入纠错。超时、429 和 5xx，由下一课的 Provider 可靠性策略处理。
+
+两层不能各自无限重试。否则一次请求会产生不可控的调用次数。
+
+### 8.1 先对齐 `complete()` 签名
+
+需要说明的是：第四课接入 OpenAI-compatible Provider 时，`complete()` 已经加了 `generation` 参数。
+
+可是 `ModelProvider` 协议还停留在旧签名。
+
+`ChatService` 只依赖这个协议。如果不先对齐，纠错重试就传不进生成参数。
+
+所以，先改 `app/providers/base.py`：
+
+```python
+from app.schemas import ChatMessage, GenerationConfig
+
+
+class ModelProvider(Protocol):
+    async def complete(
+        self,
+        *,
+        messages: list[ChatMessage],
+        model: str | None = None,
+        # 新增的 generation 参数
+        generation: GenerationConfig | None = None,
+    ) -> ProviderResult: ...
+```
+
+上面代码中，`generation` 是可选参数。Mock Provider 可以忽略它；真实 Adapter、纠错重试和调用记录必须能原样传递。
+
+### 8.2 再实现纠错逻辑
+
+接下来实现纠错重试。
 
 在 `app/services.py` 中增加一个结构化调用结果，并用下面的方法替换原来的单次生成逻辑：
 
@@ -399,30 +481,40 @@ from app.schemas import ChatMessage, GenerationConfig, SummaryResult
 from app.structured import StructuredOutputError, parse_summary
 
 
+# 一次结构化摘要调用的结果（含纠错次数与累计 usage）
 @dataclass(frozen=True)
 class StructuredSummaryCall:
+    # 通过 Schema 校验后的业务结果
     result: SummaryResult
+    # 实际使用的模型名
     model: str
+    # 全部尝试的输入 Token 合计；任一缺失则为 None
     input_tokens: int | None
+    # 全部尝试的输出 Token 合计；任一缺失则为 None
     output_tokens: int | None
+    # 纠错次数：0 表示首次成功，1 表示纠错后成功
     retry_count: int
 
 
+# ChatService 方法：首次生成 + 最多一次纠错
 async def generate_summary(
     self,
     messages: list[ChatMessage],
     *,
     max_attempts: int = 2,
 ) -> StructuredSummaryCall:
+    # 本课只允许 1～2 次，避免与 Provider 层重试叠加失控
     if max_attempts < 1 or max_attempts > 2:
         raise ValueError("structured output attempts must be between 1 and 2")
 
+    # 可追加纠错提示的消息副本，不修改调用方传入的列表
     working_messages = list(messages)
     input_usages: list[int | None] = []
     output_usages: list[int | None] = []
     last_error: StructuredOutputError | None = None
 
     for attempt in range(1, max_attempts + 1):
+        # 纠错场景固定低随机性，提高结构稳定性
         provider_result = await self.provider.complete(
             messages=working_messages,
             generation=GenerationConfig(
@@ -436,23 +528,29 @@ async def generate_summary(
 
         try:
             result = parse_summary(provider_result.text)
+            # 任一次 usage 为 None，合计也记为 None，避免低估成本
+            input_tokens = (
+                None
+                if any(v is None for v in input_usages)
+                else sum(v for v in input_usages if v is not None)
+            )
+            output_tokens = (
+                None
+                if any(v is None for v in output_usages)
+                else sum(v for v in output_usages if v is not None)
+            )
             return StructuredSummaryCall(
                 result=result,
                 model=provider_result.model,
-                input_tokens=(
-                    sum(input_usages) if all(v is not None for v in input_usages) else None
-                ),
-                output_tokens=(
-                    sum(output_usages)
-                    if all(v is not None for v in output_usages)
-                    else None
-                ),
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
                 retry_count=attempt - 1,
             )
         except StructuredOutputError as error:
             last_error = error
             if attempt == max_attempts:
                 break
+            # 把校验失败原因追加为下一条 user，再请求一次合规 JSON
             working_messages.append(
                 ChatMessage(
                     role="user",
@@ -464,39 +562,104 @@ async def generate_summary(
                 )
             )
 
+    # 两次都不过 Schema：明确失败，不把半截结果当成功
     raise StructuredOutputError(
         f"structured output failed after {max_attempts} attempts: {last_error}"
     )
 ```
 
-这个实现刻意限制为“首次生成 + 一次纠错”。重试参数固定为低随机性；Token usage 统计包含全部尝试，只要任一次 usage 缺失，合计就保持 `null`。不能只记录最后一次成功调用，否则成本和延迟都会被低估。
+上面代码中，有四个关键点。
 
-把 `summarize()` 中原来的单次 `provider.complete()` 与 `parse_summary()` 替换为 `generate_summary()`，并把 `retry_count` 交给第七课的 `ModelCallRecord`。修复 Prompt 只包含校验错误摘要，不应把完整敏感输入或 Provider 原始错误写入日志。
+**（1）`max_attempts`**
+
+实现刻意限制为「首次生成 + 一次纠错」。只允许 1 或 2 次，避免与 Provider 层重试叠加失控。
+
+**（2）`GenerationConfig`**
+
+纠错场景固定低随机性：`temperature=0`、`top_p=1`、`max_output_tokens=512`。
+目的是提高结构稳定性，不是追求文采。
+
+**（3）`input_tokens` 与 `output_tokens`**
+
+要统计全部尝试。只要任一次 usage 缺失，合计就保持 `null`。
+不能只记录最后一次成功调用，否则成本和延迟都会被低估。
+
+**（4）纠错 `user` 消息**
+
+把校验失败原因追加为下一条 user 消息，再请求一次合规 JSON。
+修复 Prompt 只包含错误摘要，不要把完整敏感输入或 Provider 原始错误写进去。
+
+两次都不过 Schema，就明确失败，不把半截结果当成功。
+
+### 8.3 接到 `summarize()`
+
+然后，把第五节里的单次 `provider.complete()` 与 `parse_summary()` 换成 `generate_summary()`：
+
+```python
+async def summarize(self, request: SummaryRequest) -> SummaryResponse:
+    started_at = time.perf_counter()
+    rendered_prompt = prompt_registry.render(
+        "summary.basic",
+        "1.0.0",
+        source_text=request.text,
+    )
+    # 用带纠错的 generate_summary，替代单次 complete + parse_summary
+    call = await self.generate_summary(rendered_prompt.messages)
+    latency_ms = int((time.perf_counter() - started_at) * 1000)
+
+    # call.retry_count 本课先留在 StructuredSummaryCall 中
+    # 第七课再写入 ModelCallRecord
+    return SummaryResponse(
+        run_id=str(uuid.uuid4()),
+        result=call.result,
+        model=call.model,
+        prompt_id=rendered_prompt.prompt_id,
+        prompt_version=rendered_prompt.version,
+        input_tokens=call.input_tokens,
+        output_tokens=call.output_tokens,
+        latency_ms=latency_ms,
+    )
+```
+
+上面代码中，`render()` 和组装 `SummaryResponse` 都不用改。变的只是中间两步：生成与解析。
+
+`retry_count` 本课先留在 `StructuredSummaryCall` 里。第七课再把它接到 `ModelCallRecord`。本课不必新建观测模型。
 
 ## 九、第八步：定义重试耗尽后的状态
 
-两次都失败时，不能把半截 JSON 当作成功，也不能悄悄换成 Mock。根据业务风险选择一种显式结果：
+两次都失败时，不能把半截 JSON 当作成功，也不能悄悄换成 Mock。
+
+根据业务风险，选择一种显式结果：
 
 | 策略 | 适用场景 | 对外表现 |
 | --- | --- | --- |
-| 直接失败 | 实时接口、没有可靠替代结果 | 返回 `invalid_structured_output / 502` |
+| 直接失败 | 实时接口、无可靠替代 | 返回 502 / `invalid_structured_output` |
 | 缓存回退 | 同一输入、模型、Prompt 和 Schema 曾有已验证结果 | 返回缓存结果，并标记 `source=cache`、`degraded=true` |
 | 转人工 | 合同审核、发布审批等高价值任务 | 返回 `202` 与 `review_id`，进入人工队列 |
 | 降级 Schema | 调用方明确接受较少字段 | 返回另一个显式 `schema_version`，不能伪装成 v1 |
 
-缓存 Key 至少包含输入哈希、逻辑模型路由、Prompt 版本和 Schema 版本。缺少其中任意一项，都可能把旧协议结果当成新结果。是否允许缓存或转人工，应由业务接口配置决定，而不是在通用 Parser 中猜测。
+缓存 Key 至少包含输入哈希、逻辑模型路由、Prompt 版本和 Schema 版本。缺少其中任意一项，都可能把旧协议结果当成新结果。
+
+是否允许缓存或转人工，应由业务接口配置决定，而不是在通用 Parser 中猜测。
 
 ## 十、第九步：管理 Schema 演进
 
 `summary.v1` 是业务协议，不是 Python 类名。演进时遵守下面的兼容规则：
 
-- 增加可选字段通常可以保持 v1，但旧客户端必须能忽略它；
-- 新增必填字段、重命名字段或改变字段含义，应发布 `summary.v2`；
-- Prompt 版本和 Schema 版本分别记录，二者不能共用一个版本号；
-- Gateway 可以在边界层提供 `v2 -> v1` 的显式转换，但不能修改已保存的原始模型结果；
-- Golden Tasks 同时声明期望的 `schema_version`，防止模型或 Prompt 升级造成静默协议漂移。
+- 增加可选字段通常可以保持 v1，但旧客户端必须能忽略它
+- 新增必填字段、重命名字段或改变字段含义，应发布 `summary.v2`
+- Prompt 版本和 Schema 版本分别记录，二者不能共用一个版本号
+- Gateway 可以在边界层提供 `v2 -> v1` 的显式转换，但不能修改已保存的原始模型结果
+- Golden Tasks 同时声明期望的 `schema_version`，防止模型或 Prompt 升级造成静默协议漂移
 
-发布新版本时，至少经历“生成新 Schema -> 双版本验证 -> 更新调用方 -> 停止新流量写入旧版本 -> 保留历史读取”的过程。Pydantic 负责单次校验，版本策略负责跨时间兼容，两者缺一不可。
+发布新版本时，至少经历这样一条路径：
+
+```text
+生成新 Schema -> 双版本验证 -> 更新调用方
+-> 停止新流量写入旧版本 -> 保留历史读取
+```
+
+简单说，Pydantic 负责单次校验，版本策略负责跨时间兼容。两者缺一不可。
 
 ## 十一、本课验收
 
@@ -513,8 +676,10 @@ async def generate_summary(
 
 ## 十二、小结
 
-这一课建立了从生成约束、Pydantic 校验、有限纠错到失败恢复的完整链路。模型原生 Structured Output 用于降低失败率，业务 Schema 用于守住最终边界；任何重试、缓存和人工处理都必须有明确预算与状态。
+今天就讲到这里。这一课建立了从生成约束、Pydantic 校验、有限纠错到失败恢复的完整链路。
+
+模型原生 Structured Output 用来降低失败率，业务 Schema 用来守住最终边界。任何重试、缓存和人工处理，都必须有明确预算与状态。
 
 下一课会把这些尝试与 Provider 重试、模型路由和调用观测接到同一个 `run_id` 上。
 
----
+如果你看到了结尾，说明你已经把「结构化输出的错误边界」这一环接上了。下一课见。

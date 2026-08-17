@@ -597,12 +597,6 @@ curl --fail-with-body \
   -X POST http://localhost:8000/v1/chat \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "balanced",
-    "generation": {
-      "temperature": 0.2,
-      "top_p": 1.0,
-      "max_output_tokens": 256
-    },
     "messages": [
       {
         "role": "user",
@@ -654,6 +648,8 @@ curl -i \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
+
+> 还记得项目会生成一个 docs 路径吗？ 这个路径是一个类似swagger的接口文档，所有的测试都可以在 docs 路径中进行。
 
 ## 九、本课验收
 
