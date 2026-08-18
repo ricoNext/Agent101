@@ -2,24 +2,36 @@
 
 > 所属章节：[第一章：LLM API、Prompt、Structured Output 与 Gateway](./index.md)  
 > 上一课：[第 6 课：建立 Structured Output 错误边界](./lesson-06-structured-output.md)  
-> 下一课：[第 8 课：实现可取消的 SSE 流式接口](./lesson-08-sse-streaming.md)
+> 下一课：[第 8 课：实现可取消的 SSE 流式接口](./lesson-08-sse-streaming.md)  
+> [参考代码基线](https://github.com/ricoNext/agent-platform/tree/chapter-06)
 
-## 一、本课要解决的问题
+## 一、前言
 
-现在系统已经能接入真实模型，也能拒绝非法结构。但只要遇到一次超时、限流或模型不可用，请求就直接失败；调用方还需要知道具体模型名称，无法真正把 Gateway 当成稳定服务。
+上一课，我们已经能拒绝非法结构，也能对摘要做一次有边界的纠错。
 
-本课会补齐 Gateway 的可靠性控制面：
+系统现在可以接入真实模型，也能拦住不合格的 Structured Output。事情到这里，好像已经能用了。
+但只要遇到一次超时、限流或模型不可用，请求就直接失败。
 
-- 将失败分成可重试与不可重试
-- 对瞬时错误执行有限重试和退避
-- 使用逻辑模型别名隔离具体模型名称
-- 在候选模型之间 fallback
-- 为每次调用记录 Trace、Prompt、Token、Latency 和 Cost
-- 明确普通调用与 Streaming 的重试边界
+调用方还得知道具体模型名称。这样的 Gateway，还称不上稳定服务。
 
-## 二、先给失败分类
+**真正的问题不是“模型会不会挂”，而是挂了以后，调用方要不要跟着一起挂。**
 
-重试不是默认答案。只有错误有较大概率在短时间内自行恢复，并且重复请求不会造成不可接受的副作用时，重试才有意义。
+这一课就来补齐 Gateway 的可靠性控制面。简单说，会做六件事：
+
+1. 把失败分成可重试与不可重试
+2. 对瞬时错误执行有限重试和退避
+3. 用逻辑模型别名隔离具体模型名称
+4. 在候选模型之间 fallback
+5. 为每次调用记录 Trace、Prompt、Token、Latency 和 Cost
+6. 明确普通调用与 Streaming 的重试边界
+
+建议先跟着例子做一遍，再读文字说明。
+
+## 二、第一步：先给失败分类
+
+重试不是默认答案。
+
+字面上讲，失败了再试一次，好像总能提高成功率。但是，更准确的说法是：只有错误有较大概率在短时间内自行恢复，并且重复请求不会造成不可接受的副作用时，重试才有意义。
 
 | 失败 | 是否重试 | 处理方式 |
 | --- | --- | --- |
@@ -32,11 +44,16 @@
 | Structured Output 不合法 | 有条件 | 最多纠错一次，否则降级或转人工 |
 | 内容质量不合格 | 不能盲目重试 | 调整 Prompt、模型或任务设计 |
 
-重试次数必须计入总时间和成本预算。三次各 30 秒的超时不是“更可靠”，而是让用户等 90 秒后才看到失败。
+必须牢记的是：重试次数必须计入总时间和成本预算。三次各 30 秒的超时，不是“更可靠”，而是让用户等 90 秒后才看到失败。
 
-## 三、让 ProviderError 表达重试语义
+## 三、第二步：让 ProviderError 表达重试语义
 
-更新 `app/providers/base.py` 中的错误类型：
+错误发生以后，上层怎么决定“再试一次”还是“立刻失败”？
+
+不能靠猜 HTTP 状态，也不能把所有失败都折叠成一句 `provider_http_error`。
+这一节就来看看，如何让 `ProviderError` 自己说出重试语义。
+
+首先，更新 `app/providers/base.py` 中的错误类型：
 
 ```python
 class ProviderError(Exception):
@@ -45,8 +62,11 @@ class ProviderError(Exception):
         code: str,
         message: str,
         *,
+        # 是否可以重试
         retryable: bool = False,
+        # 是否可以 fallback
         fallback_allowed: bool = False,
+        # HTTP 状态码
         status_code: int | None = None,
         retry_after_seconds: float | None = None,
         route: str | None = None,
@@ -65,70 +85,134 @@ class ProviderError(Exception):
         self.attempt_count = attempt_count
 ```
 
-然后在 `OpenAICompatibleProvider` 中精细映射错误。错误码必须在 Adapter 中确定，不能把所有 HTTP 状态都折叠成 `provider_http_error`：
+上面代码中，关键字段有三个。
+
+**（1）`retryable`**
+
+当前目标能不能再试一次。超时、429、5xx 通常可以；401、403、400 不行。
+
+**（2）`fallback_allowed`**
+
+能不能换下一个候选模型。协议异常可以换 Provider，但不能反复轰炸同一服务。鉴权失败则两边都不允许。
+
+**（3）`retry_after_seconds`**
+
+上游要求等待多久。有就尊重它，没有再走本地退避。
+
+接着，打开第 4 课创建的 `app/providers/openai_compatible.py`。
+
+`complete()` 和 `stream()` 都会碰到同一类 httpx 异常，错误码也必须一致。
+但不必把映射逻辑各写一遍。抽出一个方法，两处都调用它。
+
+需要说明的是：这里只统一错误码。
+第八课会单独讲流式重试边界，不表示 `stream()` 也要重试。
+
+错误码必须在 Adapter 中确定，不能把所有 HTTP 状态都折叠成 `provider_http_error`。
+
+先在 `OpenAICompatibleProvider` 中加入 `_raise_httpx_error()`：
 
 ```python
-except httpx.TimeoutException as error:
-    raise ProviderError(
-        "provider_timeout",
-        "模型服务响应超时",
-        retryable=True,
-        fallback_allowed=True,
-    ) from error
-except httpx.RequestError as error:
-    raise ProviderError(
-        "provider_network_error",
-        "无法连接模型服务",
-        retryable=True,
-        fallback_allowed=True,
-    ) from error
-except httpx.HTTPStatusError as error:
-    status_code = error.response.status_code
-    retry_after = error.response.headers.get("Retry-After")
-    retry_after_seconds = (
-        min(float(retry_after), 10.0)
-        if retry_after is not None and retry_after.isdigit()
-        else None
-    )
+    def _raise_httpx_error(self, error: httpx.HTTPError) -> None:
+        if isinstance(error, httpx.TimeoutException):
+            raise ProviderError(
+                "provider_timeout",
+                "模型服务响应超时",
+                retryable=True,
+                fallback_allowed=True,
+            ) from error
+        if isinstance(error, httpx.HTTPStatusError):
+            status_code = error.response.status_code
+            retry_after = error.response.headers.get("Retry-After")
+            retry_after_seconds = (
+                min(float(retry_after), 10.0)
+                if retry_after is not None and retry_after.isdigit()
+                else None
+            )
 
-    if status_code == 429:
-        code = "provider_rate_limited"
-        retryable = True
-        fallback_allowed = True
-    elif status_code in {401, 403}:
-        code = "provider_auth_failed"
-        retryable = False
-        fallback_allowed = False
-    elif status_code in {400, 404, 422}:
-        code = "provider_bad_request"
-        retryable = False
-        fallback_allowed = False
-    elif status_code == 408 or status_code >= 500:
-        code = "provider_unavailable"
-        retryable = True
-        fallback_allowed = True
-    else:
-        code = "provider_http_error"
-        retryable = False
-        fallback_allowed = False
+            if status_code == 429:
+                code = "provider_rate_limited"
+                retryable = True
+                fallback_allowed = True
+            elif status_code in {401, 403}:
+                code = "provider_auth_failed"
+                retryable = False
+                fallback_allowed = False
+            elif status_code in {400, 404, 422}:
+                code = "provider_bad_request"
+                retryable = False
+                fallback_allowed = False
+            elif status_code == 408 or status_code >= 500:
+                code = "provider_unavailable"
+                retryable = True
+                fallback_allowed = True
+            else:
+                code = "provider_http_error"
+                retryable = False
+                fallback_allowed = False
 
-    raise ProviderError(
-        code,
-        f"模型服务返回 HTTP {status_code}",
-        retryable=retryable,
-        fallback_allowed=fallback_allowed,
-        status_code=status_code,
-        retry_after_seconds=retry_after_seconds,
-    ) from error
+            raise ProviderError(
+                code,
+                f"模型服务返回 HTTP {status_code}",
+                retryable=retryable,
+                fallback_allowed=fallback_allowed,
+                status_code=status_code,
+                retry_after_seconds=retry_after_seconds,
+            ) from error
+
+        raise ProviderError(
+            "provider_network_error",
+            "无法连接模型服务",
+            retryable=True,
+            fallback_allowed=True,
+        ) from error
 ```
 
-`Retry-After` 既可能是秒数，也可能是 HTTP 日期。第一章实现秒数形式并设置 10 秒上限；生产版本可以补充日期解析。错误消息对外保持稳定，不返回 Provider 原始响应体。原始响应可能包含内部地址、请求片段或敏感信息，只能进入受控日志。
+然后，把 `complete()` 和 `stream()` 里原来的三组 `except` 都换成：
+
+```python
+        except (httpx.RequestError, httpx.HTTPStatusError) as error:
+            self._raise_httpx_error(error)
+```
+
+`invalid_provider_response` 那一组不用动。
+
+注意：`TimeoutException` 是 `RequestError` 的子类，所以辅助方法里必须先判断超时。
+`HTTPStatusError` 不是 `RequestError`，所以 `except` 里两个类型都要写上。
+
+上面代码中，映射规则可以记成四类。
+
+**（1）超时和网络错误：**
+`provider_timeout`、`provider_network_error`。可重试，也允许 fallback。
+
+**（2）429：**
+`provider_rate_limited`。可重试，也允许换候选模型。如果响应头带了 `Retry-After`，先读它。
+
+**（3）401 / 403 / 400 / 404 / 422：**
+凭据或请求本身有问题。立即失败，不重试，也不 fallback。
+
+**（4）408 或 5xx：**
+`provider_unavailable`。通常可以有上限地重试。
+
+需要说明的是：`Retry-After` 既可能是秒数，也可能是 HTTP 日期。第一章实现秒数形式，并设置 10 秒上限；生产版本可以补充日期解析。
+
+错误消息对外保持稳定，不返回 Provider 原始响应体。原始响应可能包含内部地址、请求片段或敏感信息，只能进入受控日志。
 
 ### 3.1 区分两种限流
 
-`provider_rate_limited` 表示上游 Provider 没有容量；`gateway_rate_limited` 表示当前租户在进入模型调用前就超过了 Gateway 配额。两者都使用 HTTP 429，但错误码、重试时间和责任方不同。
+同样是 HTTP 429，责任方却不一样。
 
-Gateway 限流至少使用“租户 + 接口”作为 Key，不能只按来源 IP；解析请求后还可以叠加逻辑模型路由和 Token 配额。API Key 只用于鉴权，日志和限流存储中保存 Key ID 或哈希，不保存原文：
+所谓 `provider_rate_limited`，就是上游 Provider 没有容量。
+所谓 `gateway_rate_limited`，就是当前租户在进入模型调用前，已经超过了 Gateway 配额。
+
+两者都使用 HTTP 429，但错误码、重试时间和责任方不同。
+
+Gateway 限流至少使用“租户 + 接口”作为 Key，不能只按来源 IP。解析请求后，还可以叠加逻辑模型路由和 Token 配额。
+
+API Key 只用于鉴权。日志和限流存储中保存 Key ID 或哈希，不保存原文。
+
+接着，打开 `app/main.py`。
+先加入租户上下文 `TenantContext`，再注册限流中间件。
+这个中间件要挂在模型调用之前：先鉴权、再限流，通过后才进入业务路由。
 
 ```python
 import uuid
@@ -169,11 +253,24 @@ async def enforce_gateway_rate_limit(request: Request, call_next):
     return await call_next(request)
 ```
 
-本地单进程可以使用内存 Token Bucket；多进程或多实例部署必须使用 Redis、API Gateway 等共享限流器，否则每个进程都有一份独立计数。健康检查可以不鉴权，模型调用、摘要和 Streaming 必须经过相同租户边界。
+上面代码中，限流发生在调用模型之前。一旦 `decision.allowed` 为假，请求直接返回，模型一层根本不会被碰到。
 
-`authenticate_api_key()` 从 `Authorization: Bearer ...` 读取调用方 Key，计算哈希后查找 `api_key_id`、`tenant_id`、状态和到期时间。比较使用常量时间函数；数据库不保存可还原的 Key 原文。调用方 Key 无效返回 `gateway_auth_failed / 401`，这与 Gateway 自己的上游 Provider Key 失效 `provider_auth_failed / 502` 是两类错误。Key 必须支持创建、轮换、撤销和最后使用时间审计，模型 Provider Key 则只保存在服务端密钥管理中，不能下发给租户或浏览器。
+本地单进程可以使用内存 Token Bucket。多进程或多实例部署必须使用 Redis、API Gateway 等共享限流器，否则每个进程都有一份独立计数。
 
-## 四、使用逻辑模型别名
+健康检查可以不鉴权。模型调用、摘要和 Streaming 必须经过相同租户边界。
+
+`authenticate_api_key()` 从 `Authorization: Bearer ...` 读取调用方 Key，
+计算哈希后查找 `api_key_id`、`tenant_id`、状态和到期时间。
+比较使用常量时间函数；数据库不保存可还原的 Key 原文。
+
+这里有两类鉴权错误，不要混在一起：
+
+- 调用方 Key 无效：返回 `gateway_auth_failed / 401`
+- Gateway 自己的上游 Provider Key 失效：返回 `provider_auth_failed / 502`
+
+Key 必须支持创建、轮换、撤销和最后使用时间审计。模型 Provider Key 则只保存在服务端密钥管理中，不能下发给租户或浏览器。
+
+## 四、第三步：使用逻辑模型别名
 
 调用方不应该写死 `vendor-model-2026-08-01`。它应该表达任务需要的能力，例如：
 
@@ -182,7 +279,9 @@ async def enforce_gateway_rate_limit(request: Request, call_next):
 - `reasoning`：复杂推理任务
 - `dev`：本地 Mock
 
-Gateway 再把逻辑别名映射到具体 Provider 和模型。这样替换模型、灰度和回滚都不需要修改前端协议。
+所谓**逻辑模型别名**，就是给任务能力起一个稳定名字。Gateway 再把这个名字映射到具体 Provider 和模型。
+
+这样替换模型、灰度和回滚，都不需要修改前端协议。
 
 在 `ChatRequest` 中把 `model` 理解为逻辑别名，并限制长度：
 
@@ -195,9 +294,14 @@ class ChatRequest(BaseModel):
 
 生产系统可以进一步使用 `Literal` 或配置生成的允许列表，拒绝调用方任意指定底层模型。
 
-## 五、实现 RoutingProvider
+## 五、第四步：实现 RoutingProvider
 
-先在 `app/providers/base.py` 的 `ProviderResult` 中增加路由元数据。普通 Provider 使用默认值，RoutingProvider 在返回前补齐真实数据：
+别名有了，接下来要有人负责“选哪个模型、失败了怎么办”。
+
+这一节就来实现 `RoutingProvider`。
+
+先在 `app/providers/base.py` 的 `ProviderResult` 中增加路由元数据。
+普通 Provider 使用默认值，RoutingProvider 在返回前补齐真实数据：
 
 ```python
 @dataclass
@@ -210,7 +314,7 @@ class ProviderResult:
     attempt_count: int = 1
 ```
 
-创建 `app/providers/router.py`：
+然后创建 `app/providers/router.py`：
 
 ```python
 import asyncio
@@ -322,11 +426,34 @@ class RoutingProvider:
             yield chunk
 ```
 
-这个最小实现对普通调用执行重试和 fallback，并透传第 4 课定义的生成参数；对 Streaming 只选择第一个目标。401、403 和请求参数错误设置为 `fallback_allowed=False` 并立即失败；协议异常可以设置为“当前目标不重试，但允许切换 Provider”。原因是流已经向用户输出后，再切换模型会产生重复或不连贯内容。第八课会为流式调用单独建立事件和取消边界。
+上面代码中，可以分成四段来看。
 
-## 六、配置路由与 fallback
+**（1）`RouteTarget`**
 
-假设当前 OpenAI-compatible Provider 支持两个模型，可以这样装配：
+一个候选目标就是「哪一个 Provider + 哪一个具体模型」。逻辑路由名对应的是目标列表，不是单个字符串。
+
+**（2）`complete()` 的双层循环**
+
+外层遍历候选目标，内层对当前目标做有限重试。成功就补上 `route` 和 `attempt_count` 后返回。
+
+**（3）失败时怎么走：**
+`fallback_allowed=False` 立即抛出，例如 401、403 和请求参数错误。
+`retryable=False` 则停止当前目标，改试下一个。
+需要等待时，优先用 `Retry-After`；没有就用短指数退避，上限 2 秒。
+
+**（4）`stream()`**
+
+这个最小实现对 Streaming 只选择第一个目标。原因很直接：
+流已经向用户输出后，再切换模型会产生重复或不连贯内容。
+第八课会为流式调用单独建立事件和取消边界。
+
+注意：协议异常可以设置为“当前目标不重试，但允许切换 Provider”。普通调用可以 fallback；Streaming 先不要照搬。
+
+## 六、第五步：配置路由与 fallback
+
+下面演示如何把路由装配起来。
+
+假设当前 OpenAI-compatible Provider 支持两个模型，可以这样写：
 
 ```python
 routing_provider = RoutingProvider(
@@ -356,9 +483,13 @@ fast_model_name: str = "replace-fast-model"
 fallback_model_name: str = "replace-fallback-model"
 ```
 
-Mock 适合离线开发和确定性测试，不应该在生产环境悄悄作为真实回答的 fallback。否则系统看似成功，实际返回了测试文本。生产 fallback 应使用经过评测的备用模型，或者明确返回降级状态。
+上面配置中，`balanced` 有两个候选：主模型和备用模型。`dev` 指向 Mock，只给离线开发和确定性测试用。
 
-## 七、重试与 fallback 的预算
+必须牢记的是：Mock 不应该在生产环境悄悄作为真实回答的 fallback。否则系统看似成功，实际返回了测试文本。
+
+生产 fallback 应使用经过评测的备用模型，或者明确返回降级状态。
+
+## 七、第六步：给重试和 fallback 设定预算
 
 为一次请求定义总预算，而不是让每层各自无限重试：
 
@@ -369,7 +500,9 @@ Mock 适合离线开发和确定性测试，不应该在生产环境悄悄作为
 最大模型调用次数：3 次
 ```
 
-为什么不是 `2 × 2 = 4`？因为总预算可能在第四次调用前已经耗尽。可靠性策略必须同时检查：
+为什么不是 `2 × 2 = 4`？因为总预算可能在第四次调用前已经耗尽。
+
+可靠性策略必须同时检查：
 
 - 已用时间
 - 已调用次数
@@ -378,9 +511,11 @@ Mock 适合离线开发和确定性测试，不应该在生产环境悄悄作为
 
 第一章先实现次数上限和短退避，第七章再加入完整预算护栏。
 
-## 八、记录每次模型调用
+## 八、第七步：记录每次模型调用
 
-只定义日志结构还不算完成观测，必须保证普通调用、Structured Output 的每次尝试和失败路径都经过同一个记录入口。创建 `app/observability.py`：
+只定义日志结构，还不算完成观测。
+
+必须保证普通调用、Structured Output 的每次尝试和失败路径，都经过同一个记录入口。创建 `app/observability.py`：
 
 ```python
 import time
@@ -489,7 +624,11 @@ async def observed_complete(
     finally:
         input_tokens = result.input_tokens if result else None
         output_tokens = result.output_tokens if result else None
-        attempt_count = result.attempt_count if result else (error.attempt_count if error else 1)
+        attempt_count = (
+            result.attempt_count
+            if result
+            else (error.attempt_count if error else 1)
+        )
         route = (
             result.route
             if result and result.route
@@ -527,9 +666,24 @@ async def observed_complete(
         )
 ```
 
-`run_id` 关联一次 Gateway 请求，`call_id` 标识其中的一次模型调用。Structured Output 纠错会产生多个 `call_id`，但它们共享同一个 `run_id`。一次请求应在调用模型前创建 `run_id`，成功与失败日志都使用同一个值，不能在异常处理器中临时换一个新 ID。
+上面代码中，有三个 ID 必须分清。
 
-普通聊天不再直接调用 `self.provider.complete()`，而是调用 `observed_complete()`。摘要生成的每次纠错尝试也使用这个包装器，`request_kind="structured-output"`、`schema_version="summary.v1"`。这样无论最终成功还是失败，每次实际产生 Token 和延迟的调用都有记录。
+**（1）`run_id`**
+
+关联一次 Gateway 请求。一次请求应在调用模型前创建它，成功与失败日志都使用同一个值，不能在异常处理器中临时换一个新 ID。
+
+**（2）`call_id`**
+
+标识其中的一次模型调用。Structured Output 纠错会产生多个 `call_id`，但它们共享同一个 `run_id`。
+
+**（3）`observed_complete()`**
+
+真正的记录入口。无论最终成功还是失败，`finally` 都会写出一条 `ModelCallRecord`。
+
+普通聊天不再直接调用 `self.provider.complete()`，而是调用 `observed_complete()`。
+摘要生成的每次纠错尝试也使用这个包装器，
+`request_kind="structured-output"`、`schema_version="summary.v1"`。
+这样无论最终成功还是失败，每次实际产生 Token 和延迟的调用都有记录。
 
 应用启动时配置价格快照，并把它注入服务层：
 
@@ -548,13 +702,18 @@ estimated_cost = input_tokens × input_price
                + output_tokens × output_price
 ```
 
-模型价格会变化，不能把某个厂商当前价格长期写死在业务代码里。若 Provider 不返回 usage，成本应记录为 `null`，不能用字符数伪造 Token。基线报告必须同时保存 `price_version`，否则历史成本无法复算。
+模型价格会变化，不能把某个厂商当前价格长期写死在业务代码里。
+若 Provider 不返回 usage，成本应记录为 `null`，不能用字符数伪造 Token。
+基线报告必须同时保存 `price_version`，否则历史成本无法复算。
 
 日志中不要记录 API Key，也不要默认记录完整 Prompt 和用户输入。优先记录 ID、版本、长度、哈希或受控存储引用。
 
-本地可以让日志采集器把 `gateway.model_call` 输出保存为 JSONL；生产环境应发送到日志平台或 Trace 后端。无论使用哪种存储，都要能够按 `run_id` 找到全部 `call_id`，并按 `tenant_id` 控制查询权限。
+本地可以让日志采集器把 `gateway.model_call` 输出保存为 JSONL；
+生产环境应发送到日志平台或 Trace 后端。
+无论使用哪种存储，都要能够按 `run_id` 找到全部 `call_id`，
+并按 `tenant_id` 控制查询权限。
 
-## 九、统一对外错误协议
+## 九、第八步：统一对外错误协议
 
 Gateway 对外至少稳定提供以下错误码：
 
@@ -617,7 +776,11 @@ async def handle_provider_error(
     )
 ```
 
-上游 401/403 返回 `provider_auth_failed / 502`，而不是把 401 原样传给用户。调用方已经通过 Gateway 鉴权，上游凭据失效是 Gateway 配置问题；原样返回 401 会让调用方误以为自己的 Key 有问题。`gateway_rate_limited` 则由前面的租户限流中间件直接返回。
+上面代码中，上游 401/403 返回 `provider_auth_failed / 502`，而不是把 401 原样传给用户。
+
+调用方已经通过 Gateway 鉴权，上游凭据失效是 Gateway 配置问题。
+原样返回 401，会让调用方误以为自己的 Key 有问题。
+`gateway_rate_limited` 则由前面的租户限流中间件直接返回。
 
 同时让 `ChatService.chat()` 接受入口创建的 `run_id` 和租户信息，成功响应、限流响应与模型调用记录都使用同一个值：
 
@@ -659,11 +822,14 @@ async def chat(payload: ChatRequest, request: Request) -> ChatResponse:
     )
 ```
 
-摘要与 Streaming 接口使用同样方式传入 `request.state.run_id`。如果未来允许外部系统提供请求 ID，必须先限制长度和字符集，不能把任意 Header 原样写入日志。
+摘要与 Streaming 接口使用同样方式传入 `request.state.run_id`。
+如果未来允许外部系统提供请求 ID，必须先限制长度和字符集，
+不能把任意 Header 原样写入日志。
 
-HTTP 请求 ID 和模型 Run ID 在第一章可以使用同一个值。未来一次 Agent Run 包含多次模型调用时，再拆分 Trace、Span 和 Model Call ID。
+HTTP 请求 ID 和模型 Run ID 在第一章可以使用同一个值。
+未来一次 Agent Run 包含多次模型调用时，再拆分 Trace、Span 和 Model Call ID。
 
-## 十、故障演练
+## 十、第九步：故障演练
 
 至少完成六组演练并记录结果：
 
@@ -671,8 +837,10 @@ HTTP 请求 ID 和模型 Run ID 在第一章可以使用同一个值。未来一
 2. 使用不存在的逻辑路由，确认请求在调用 Provider 前失败。
 3. 让主模型返回 500，确认可以切到备用模型。
 4. 让 Provider 返回 401，确认不会重复重试无效凭据。
-5. 让 Provider 返回 429 和 `Retry-After: 2`，确认错误码为 `provider_rate_limited`，并在预算允许时等待后重试。
-6. 用同一租户超过 Gateway 配额，确认模型没有被调用，响应为 `gateway_rate_limited` 且包含限流响应头。
+5. 让 Provider 返回 429 和 `Retry-After: 2`，确认错误码为
+   `provider_rate_limited`，并在预算允许时等待后重试。
+6. 用同一租户超过 Gateway 配额，确认模型没有被调用，
+   响应为 `gateway_rate_limited` 且包含限流响应头。
 
 每次演练都检查 `run_id`、重试次数、最终模型、耗时和错误码是否进入结构化日志。
 
@@ -693,4 +861,13 @@ HTTP 请求 ID 和模型 Run ID 在第一章可以使用同一个值。未来一
 - 普通调用、结构化纠错和失败路径都实际调用 `write_model_call()`
 - API Key、完整 Prompt 和 Provider 原始错误没有进入普通日志
 
-下一课将处理 Streaming。它不能照搬普通调用的重试策略，因为一旦字节已经发送给客户端，切换模型会破坏输出的一致性。
+## 十二、小结
+
+今天就讲到这里。这一课把失败分类、有限重试、逻辑路由、fallback 和调用观测接到了同一条链路上。
+
+调用方看到的是稳定别名和稳定错误码，看不到厂商模型名，也看不到上游原始响应。
+每一次真正产生 Token 的调用，都留下 `run_id` 和 `call_id`。
+
+下一篇教程将讲解 Streaming。它不能照搬普通调用的重试策略，因为一旦字节已经发送给客户端，切换模型会破坏输出的一致性。
+
+如果你看到了结尾，说明你已经把 Gateway 的可靠性控制面接上了。下一课见。
