@@ -1,11 +1,8 @@
 # 第一章：LLM API、Prompt、Structured Output 与 Gateway
 
-> 课时：10 课时  
-> 项目里程碑：M1 · LLM Gateway
-
 ## 章节定位
 
-本章的目标是完成从传统 HTTP API 调用到可治理 LLM 服务的迁移，只解决“如何稳定、统一、可观测地调用模型”。Function Calling、MCP 和 Agent Loop 放在第二、三章，本章不提前涉及。
+本章的目标是搭建一个可治理的 LLM 服务，实现“如何稳定、统一、可观测地调用模型”。
 
 > 全课程的目的是搭建一个 `agent-platform` 平台的基础设施，每课都在上一课的代码基础上增加一项能力，最终形成后续所有 Agent 功能共同依赖的 Gateway。
 
@@ -17,13 +14,17 @@
 2. 设计不依赖具体厂商协议的 Provider 接口。
 3. 接入 OpenAI-compatible 模型并处理超时、限流和异常响应。
 4. 理解 Chat Completions、Responses 类 API、生成参数、Context Window 与模型能力矩阵。
-5. 将 Prompt 管理为有 ID、有版本、有变量契约的工程资产。
-6. 使用 Pydantic 校验 Structured Output，并建立纠错、降级和 Schema 演进边界。
-7. 使用逻辑模型别名实现路由、有限重试和 fallback。
-8. 区分 Gateway 租户限流与 Provider 限流，并提供稳定错误协议。
-9. 设计带明确终态、顺序和取消传播的 SSE 事件流。
-10. 记录模型、Prompt、Schema、Token、Cost、Latency(估算成本) 和 Trace ID。
-11. 使用 Mock、Golden Tasks(人工智能数据标注中的“黄金标准数据集”)、Runner 和基线报告验证 Gateway。
+5. 将 Prompt 管理为有 ID、有版本、有变量契约的工程资产，并说明 Few-shot、Chain-of-Thought 与 Self-Consistency 的适用边界。
+6. 使用 Pydantic 定义并校验 Structured Output 契约。
+7. 为结构化输出建立有限纠错、明确降级和 Schema 演进边界。
+8. 区分内容错误、Provider 错误与 Gateway 限流，并提供稳定错误协议。
+9. 使用逻辑模型别名实现有限重试、fallback 和路由预算。
+10. 用 Run、Attempt 与 Event 记录模型、Prompt、Schema、Token、Cost、Latency 和 Trace ID。
+11. 设计带明确终态、顺序、取消传播和 `usage` 字段的 SSE 事件流，并能对比 WebSocket 的适用场景。
+12. 使用前端控制台验证流式消费、模型路由、Run ID 与停止操作。
+13. 使用单元测试、Golden Tasks 和受控故障场景定义 Gateway 验收任务。
+14. 使用 Runner 重复执行任务，并根据事实数据生成模型调用基线报告。
+15. 完成前后端联调、M1 验收判定和章节复盘。
 
 ## 课程目录
 
@@ -31,26 +32,33 @@
 | ---: | --- | --- |
 | 1 | [认识 Agent 工程与课程平台](./lesson-01-agent-engineering-map.md) | 明确能力边界、平台结构和七章演进路线 |
 | 2 | [建立一个可测试的后端](./lesson-02-testable-backend.md) | FastAPI 骨架、健康检查和稳定 HTTP 基线 |
-| 3 | [用 Provider 抽象隔离模型服务](./lesson-03-provider-abstraction-mock.md) | 通用协议、Provider 接口和 Mock Provider |
-| 4 | [接入 OpenAI-compatible 模型服务](./lesson-04-openai-compatible-provider.md) | 真实模型配置、适配器和 Provider 工厂 |
-| 5 | [管理 Prompt 模板与版本](./lesson-05-prompt-management.md) | Prompt Registry、变量校验和版本字段 |
-| 6 | [建立 Structured Output 错误边界](./lesson-06-structured-output.md) | 业务 Schema、解析校验和结构化摘要 |
-| 7 | [实现可靠性策略与模型路由](./lesson-07-reliability-routing.md) | 重试、退避、fallback、逻辑路由和调用记录 |
-| 8 | [实现可取消的 SSE 流式接口](./lesson-08-sse-streaming.md) | 统一事件协议、异常终态和取消传播 |
-| 9 | [创建 Gateway 前端控制台](./lesson-09-frontend-gateway-console.md) | 流式 UI、模型路由、Run ID 和停止操作 |
-| 10 | [建立模型基线并完成 M1 验收](./lesson-10-baseline-and-acceptance.md) | Golden Tasks、接口矩阵、基线报告和复盘 |
+| 3 | [理解 LLM API 与模型调用边界](./lesson-03-llm-api-model-boundaries.md) | 内部调用协议、生成参数、Token、成本、错误分层和能力矩阵 |
+| 4 | [用 Provider 抽象隔离模型服务](./lesson-04-provider-abstraction-mock.md) | Provider 接口、请求响应标准化和 Mock Provider |
+| 5 | [接入 OpenAI-compatible 模型服务](./lesson-05-openai-compatible-provider.md) | 真实模型配置、适配器、Provider 工厂和能力差异 |
+| 6 | [管理 Prompt 模板与版本](./lesson-06-prompt-management.md) | Prompt Registry、变量校验、Few-shot、CoT 边界和版本字段 |
+| 7 | [定义 Structured Output 契约](./lesson-07-structured-output-contract.md) | 业务 Schema、解析校验、结构化摘要和契约测试 |
+| 8 | [处理 Structured Output 失败与 Schema 演进](./lesson-08-structured-output-recovery.md) | 错误分类、有限纠错、恢复协议、兼容规则和失败样本 |
+| 9 | [实现调用可靠性与模型路由](./lesson-09-reliability-routing.md) | 错误语义、限流、重试、退避、逻辑模型和 fallback |
+| 10 | [建立调用观测与成本治理](./lesson-10-observability-cost.md) | Run/Attempt/Event、Token、成本、延迟、版本和 Trace |
+| 11 | [实现可取消的 SSE 流式接口](./lesson-11-sse-streaming.md) | 统一事件协议、`usage` 字段、WebSocket 对比、取消传播和资源释放 |
+| 12 | [创建 Gateway 前端控制台](./lesson-12-gateway-console.md) | 流式 UI、模型路由、Run ID 和停止操作 |
+| 13 | [构建 Gateway 验收任务集](./lesson-13-gateway-acceptance-tasks.md) | 核心调用链测试、Golden Tasks 和受控故障场景 |
+| 14 | [实现基线 Runner 与评测报告](./lesson-14-baseline-runner-report.md) | 重复执行、JSONL 事实记录、指标统计和基线报告 |
+| 15 | [完成 M1 联调验收与复盘](./lesson-15-m1-integration-acceptance.md) | 接口矩阵、前端状态、里程碑判定和章节复盘 |
 
-## 建议学习节奏
+## 内容分组
 
-每课建议使用一个标准课时。课堂按下面的闭环推进：
+| 阶段 | 课次 | 核心问题 | 阶段产物 |
+| --- | --- | --- | --- |
+| 工程起点 | 1–2 | Agent 工程边界是什么，后端基线如何保持可测试 | 平台地图与 FastAPI 骨架 |
+| 模型接入 | 3–5 | 如何理解并隔离不同模型协议 | 内部调用协议、Mock 与真实 Provider |
+| Prompt 与输出协议 | 6–8 | 如何管理输入，并让输出可校验、可恢复、可演进 | Prompt Registry 与 Structured Output 契约 |
+| 可靠性与观测 | 9–10 | 模型故障时如何恢复，调用代价如何追踪 | 路由控制面与模型调用记录 |
+| Streaming 与交互 | 11–12 | 流式任务如何正确结束，用户如何观察和停止运行 | SSE 接口与 Gateway 前端控制台 |
+| 验收任务设计 | 13 | M1 应该验证哪些成功、失败与恢复路径 | Golden Tasks 与受控故障场景 |
+| 基线执行 | 14 | 如何重复执行任务并形成可比较数据 | Runner、JSONL 记录与基线报告 |
+| 联调与验收 | 15 | 如何依据证据判断 M1 是否完成 | 接口矩阵、验收结论与章节复盘 |
 
-1. 解释原理、适用边界和常见失败。
-2. 完成一个可运行的最小实现。
-3. 主动制造错误并观察系统行为。
-4. 按本课验收清单检查工程结果。
-5. 记录设计选择、失败样本和未解决问题。
-
-第 2-10 课需要在配套项目仓库中持续实践。旧版参考分支仍可用于查看相关代码基线，但应以本章新版讲义的接口、Prompt、路由和验收要求为准。
 
 ## M1 交付内容
 
@@ -83,11 +91,12 @@
 
 - 每条事件都有相同 `run_id` 和递增 `sequence`。
 - 正常流以 `run.completed` 结束，失败流以 `run.failed` 结束。
+- `run.completed` 必须包含 `usage`；无真实 Token 时该字段为 `null`，不用字符数冒充。
 - 用户取消后，服务端生成器和 Provider 连接能够释放。
 
 ### 可观测与验证
 
-- 普通调用记录真实 Token usage；无 usage 时明确为 `null`。
+- 普通调用和流式终态都记录真实 Token usage；无 usage 时明确为 `null`。
 - 模型、Prompt 版本、延迟、估算成本和重试次数可以按 `run_id` 查询。
 - 基线报告至少覆盖成功率、延迟、Token、成本和错误分布。
 - Golden Tasks 可以复现普通调用、结构化输出、Streaming 和失败路径。

@@ -2,7 +2,7 @@
 
 > 所属章节：[第一章：LLM API、Prompt、Structured Output 与 Gateway](./index.md)  
 > 上一课：[第 1 课：认识 Agent 工程与课程平台](./lesson-01-agent-engineering-map.md)  
-> 下一课：[第 3 课：用 Provider 抽象隔离模型服务](./lesson-03-provider-abstraction-mock.md)  
+> 下一课：[第 3 课：理解 LLM API 与模型调用边界](./lesson-03-llm-api-model-boundaries.md)<br>
 > [参考代码](https://github.com/ricoNext/agent-platform/tree/chapter-01)
 
 ## 一、前言

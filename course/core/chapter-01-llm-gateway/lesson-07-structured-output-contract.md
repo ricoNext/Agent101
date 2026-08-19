@@ -1,8 +1,8 @@
-# 第 6 课：建立 Structured Output 错误边界
+# 第 7 课：定义 Structured Output 契约
 
 > 所属章节：[第一章：LLM API、Prompt、Structured Output 与 Gateway](./index.md)  
-> 上一课：[第 5 课：管理 Prompt 模板与版本](./lesson-05-prompt-management.md)  
-> 下一课：[第 7 课：实现可靠性策略与模型路由](./lesson-07-reliability-routing.md)  
+> 上一课：[第 6 课：管理 Prompt 模板与版本](./lesson-06-prompt-management.md)  
+> 下一课：[第 8 课：处理 Structured Output 失败与 Schema 演进](./lesson-08-structured-output-recovery.md)  
 > [参考代码基线](https://github.com/ricoNext/agent-platform/tree/chapter-05)
 
 ## 一、前言
@@ -21,7 +21,7 @@
 
 所以今天接着往下讲：先把「结构化输出」这件事做对。
 
-这一课会完成九件事：
+这一课集中完成六件事：
 
 1. 用 Pydantic 定义摘要业务的 Schema
 2. 写一个不依赖模型的校验函数，把原始文本解析成 `SummaryResult`
@@ -29,11 +29,8 @@
 4. 在 `ChatService` 中调用 Provider 并解析结果
 5. 暴露 `POST /v1/summaries` 接口
 6. 比较 Prompt JSON、模型原生 Structured Output 与工具强制结构化
-7. 对校验失败执行一次有边界的纠错重试
-8. 重试耗尽后进入明确的降级、缓存或人工处理状态
-9. 为 Schema 增加版本并定义兼容规则
 
-即使你暂时还在用 Mock Provider，也要把校验和错误处理做完整。建议先跟着例子做一遍，再读文字说明。
+本课先把契约、解析和校验链路做正确。后文保留了纠错、降级和版本演进的实现预览，正式的恢复策略、故障演练与验收放在第 8 课，避免在一个课时内同时承担两组目标。
 
 ## 二、第一步：定义业务 Schema
 
@@ -218,12 +215,9 @@ def parse_summary(raw_text: str) -> SummaryResult:
 
 ```python
 import json
-
-# 增加导入 GenerationConfig
-from app.schemas import ChatMessage, GenerationConfig
 ```
 
-然后把 MockProvider 的 `complete()` 方法改写为：
+同时从 `app.schemas` 导入 `GenerationConfig`，然后把 `complete()` 方法替换为：
 
 ```python
 async def complete(
@@ -233,12 +227,10 @@ async def complete(
     model: str | None = None,
     generation: GenerationConfig | None = None,
 ) -> ProviderResult:
-    # 获取最后一条用户消息
     last_user_message = next(
         (message.content for message in reversed(messages) if message.role == "user"),
         "",
     )
-    # 判断是否是摘要请求
     is_summary_request = any(
         message.role == "system" and "TASK: summarize_json" in message.content
         for message in messages
@@ -438,7 +430,9 @@ pytest -q
 
 简单说，「JSON 合法」只说明语法过关；「业务结构合法」才说明它能进入下游逻辑。两者不是一回事。
 
-## 八、第七步：实现有边界的纠错重试
+## 八、实现预览：有边界的纠错重试
+
+> 本节及后续恢复内容用于衔接下一课，不计入本课核心验收。第 8 课会正式实现错误分类、有限纠错、恢复协议和 Schema 演进。
 
 如果 JSON 能解析，但业务结构不合法，可以再给模型一次机会。这就叫纠错重试。
 
@@ -628,11 +622,9 @@ async def summarize(self, request: SummaryRequest) -> SummaryResponse:
 
 上面代码中，`render()` 和组装 `SummaryResponse` 都不用改。变的只是中间两步：生成与解析。
 
-这样在 summarize 方法中，我们就可以使用带有纠错的 `generate_summary` 方法来生成摘要。
-
 `retry_count` 本课先留在 `StructuredSummaryCall` 里。第七课再把它接到 `ModelCallRecord`。本课不必新建观测模型。
 
-## 九、第八步：定义重试耗尽后的状态
+## 九、实现预览：定义重试耗尽后的状态
 
 两次都失败时，不能把半截 JSON 当作成功，也不能悄悄换成 Mock。
 
@@ -647,10 +639,9 @@ async def summarize(self, request: SummaryRequest) -> SummaryResponse:
 
 缓存 Key 至少包含输入哈希、逻辑模型路由、Prompt 版本和 Schema 版本。缺少其中任意一项，都可能把旧协议结果当成新结果。
 
+是否允许缓存或转人工，应由业务接口配置决定，而不是在通用 Parser 中猜测。
 
-总之业务层可以根据实际情况选择一种对于重试耗尽的处理， 这一般不应该放在 Gateway 通用层处理， 这里就不展开讲如何实现了。 
-
-## 十、第九步：管理 Schema 演进
+## 十、实现预览：管理 Schema 演进
 
 `summary.v1` 是业务协议，不是 Python 类名。演进时遵守下面的兼容规则：
 
@@ -677,17 +668,12 @@ async def summarize(self, request: SummaryRequest) -> SummaryResponse:
 - 能解释 Prompt JSON、模型原生 Structured Output 和工具参数结构化的边界
 - 合法 JSON 能转成 `SummaryResult`，非 JSON、缺字段和错类型都会失败
 - `/v1/summaries` 返回 `schema_version`、Prompt 版本和真实 Token usage
-- Structured Output 最多进行一次纠错重试，并统计所有尝试的 usage
-- 重试耗尽后只会明确失败、缓存降级或转人工，不会把非法结果伪装成成功
-- 缓存 Key 包含输入、模型路由、Prompt 和 Schema 版本
-- 能判断一次 Schema 变化是否需要发布新版本
+- 已固定合法 JSON、非 JSON、缺字段和错类型四类契约测试样本
 
 ## 十二、小结
 
-今天就讲到这里。这一课建立了从生成约束、Pydantic 校验、有限纠错到失败恢复的完整链路。
+今天就讲到这里。这一课建立了从生成约束到 Pydantic 校验的结构化输出契约。
 
-模型原生 Structured Output 用来降低失败率，业务 Schema 用来守住最终边界。任何重试、缓存和人工处理，都必须有明确预算与状态。
+模型原生 Structured Output 用来降低失败率，业务 Schema 用来守住最终边界。下一课会专门处理校验失败后的纠错、降级和版本演进。
 
-下一课会把这些尝试与 Provider 重试、模型路由和调用观测接到同一个 `run_id` 上。
-
-如果你看到了结尾，说明你已经把「结构化输出的错误边界」这一环接上了。下一课见。
+如果你看到了结尾，说明你已经把「结构化输出契约」这一环接上了。下一课见。

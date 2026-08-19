@@ -21,7 +21,7 @@ features:
       src: /icons/curriculum.svg
       alt: 课程内容图标
     title: 七章核心课程
-    details: 96 个建议课时围绕七个工程里程碑展开，并通过综合项目形成完整作品集。
+    details: 101 个建议课时围绕七个工程里程碑展开，并通过综合项目形成完整作品集。
   - icon:
       src: /icons/engineering.svg
       alt: 工程实践图标
@@ -43,7 +43,7 @@ features:
       <span>个核心章节</span>
     </div>
     <div>
-      <strong>96</strong>
+      <strong>101</strong>
       <span>个建议课时</span>
     </div>
     <div>
