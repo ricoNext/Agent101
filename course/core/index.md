@@ -10,7 +10,7 @@
 | --- | --- | --- | --- | --- |
 | [第一章](./chapter-01-llm-gateway/) | LLM API、Prompt、Structured Output 与 Gateway | M1：LLM Gateway | 已完成 | 已重构为 15 节课，讲义已完成 |
 | [第二章](./chapter-02-tool-runtime-mcp/) | Function Calling、Tool Runtime 与 MCP | M2：Agent Tool Runtime | 已完成 | 已重构为 14 节课，讲义已完成 |
-| [第三章](./chapter-03-agent-loop-codebase-agent/) | Agent Loop、State、Harness 与 Codebase Agent | M3：Codebase Agent | 进行中 | 23 节核心课与 1 节选修课已设计，第 1–11 课讲义已完成 |
+| [第三章](./chapter-03-agent-loop-codebase-agent/) | Agent Loop、State、Harness 与 Codebase Agent | M3：Codebase Agent | 进行中 | 23 节核心课与 1 节选修课已设计，第 1–12 课讲义已完成 |
 | [第四章](./chapter-04-context-memory-codebase-rag/) | Context Engineering、Memory 与 Codebase RAG | M4：Context & RAG | 课程已规划 | 10 节课已设计，讲义内容待编写 |
 | [第五章](./chapter-05-multi-agent-skills/) | Multi-Agent、Subagent 与 Skill | M5：Agent Collaboration | 课程已规划 | 12 节课已设计，讲义内容待编写 |
 | [第六章](./chapter-06-agent-eval/) | Agent Eval 工程 | M6：Agent Eval Platform | 仅大纲 | 章节目标与模块已定，课次待设计 |

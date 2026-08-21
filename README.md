@@ -1,17 +1,21 @@
-# AI Agent 101：全栈工程师训练营
+# AI Agent 101
 
-AI Agent 101 是一门面向后端、全栈和平台工程师的项目制课程。课程围绕同一个 **Agent Engineering Platform** 持续演进，目标不是堆叠互不相关的 Demo，而是完成一套可运行、可评测、可治理、可部署的 Agent 工程平台。
+这是一个关于 AI Agent 工程教程，记录了我学习 Agent 的全过程。课程完全开源。
 
-课程规划以 [goal.md](./goal.md) 为准。信息架构已重组完成，讲义按章节顺序持续更新。
+这个名字来源于国内之前很火的腾讯出品的**创造101**选秀节目， 在节目里所有的观众都是“制作人”, 这有点像当前的 AI 时代，每个人都可以成为 AI 的“制作人”。 “101” 代表了从零开始，逐步掌握 AI Agent 工程的各个方面。
+
+Agent 工程虽然是新的概念，但是他并没有脱离传统的软件工程的范畴，需要大量的软件工程的实践和经验。这个教程会尽量从最基础的软件工程知识开始，用通俗的描述逐步引导你掌握 AI Agent 工程的各个方面。 
+
+课程围绕同一个 **Agent Engineering Platform** 项目持续演进，最终完成一套可运行、可评测、可治理、可部署的 Agent 工程平台。
+
+
 
 ## 课程结构
 
-课程分为四个层级：
+课程分为两个层级：
 
 1. **核心课程**：七章主线，按能力依赖顺序学习。
 2. **综合项目**：在两个业务方向中选择一个，完成最终产品与答辩。
-3. **进阶专题**：补充跨框架协作、Coding Agent 工作流、在线 Eval 等能力。
-4. **选修专题**：覆盖变化较快或适用范围较窄的协议、基础设施与法规主题。
 
 基础知识专栏独立于主线，用于补充课程中反复出现的概念，不占核心课时。
 
@@ -23,14 +27,12 @@ AI Agent 101 是一门面向后端、全栈和平台工程师的项目制课程�
 | --- | --- | --- |
 | [第一章 · LLM Gateway](./course/core/chapter-01-llm-gateway/index.md) | 已完成 | 已重构为 15 节课，讲义已完成 |
 | [第二章 · Tool Runtime / MCP](./course/core/chapter-02-tool-runtime-mcp/index.md) | 已完成 | 已重构为 14 节课，讲义已完成 |
-| [第三章 · Agent Loop / Codebase Agent](./course/core/chapter-03-agent-loop-codebase-agent/index.md) | 进行中 | 23 节核心课与 1 节选修课已设计，第 1–11 课讲义已完成 |
+| [第三章 · Agent Loop / Codebase Agent](./course/core/chapter-03-agent-loop-codebase-agent/index.md) | 进行中 | 23 节核心课与 1 节选修课已设计，第 1–12 课讲义已完成 |
 | [第四章 · Context / Memory / RAG](./course/core/chapter-04-context-memory-codebase-rag/index.md) | 课程已规划 | 10 节课已设计，讲义内容待编写 |
 | [第五章 · Multi-Agent / Skill](./course/core/chapter-05-multi-agent-skills/index.md) | 课程已规划 | 12 节课已设计，讲义内容待编写 |
 | [第六章 · Agent Eval](./course/core/chapter-06-agent-eval/index.md) | 仅大纲 | 章节目标与模块已定，课次待设计 |
 | [第七章 · 生产治理](./course/core/chapter-07-production-governance/index.md) | 仅大纲 | 章节目标与模块已定，课次待设计 |
 | [综合项目](./course/capstone/index.md) | 仅大纲 | 方向与作品集要求已定，项目讲义待写 |
-| [进阶专题](./course/advanced/index.md) | 仅大纲 | 专题目录待展开 |
-| [选修专题](./course/electives/index.md) | 仅大纲 | 专题目录待展开 |
 | [基础知识专栏](./foundations/index.md) | 进行中 | 已发布 1 篇（AI 协议） |
 
 当前主线写作重点：按课程目录逐节补全第三至第五章讲义内容。
@@ -75,9 +77,7 @@ Eval、安全与治理贯穿七章，不等到课程末尾再集中补齐。
 │   │   ├── chapter-05-multi-agent-skills/
 │   │   ├── chapter-06-agent-eval/
 │   │   └── chapter-07-production-governance/
-│   ├── capstone/                    # 综合项目与作品集
-│   ├── advanced/                    # 进阶专题
-│   └── electives/                   # 选修专题
+│   └── capstone/                    # 综合项目与作品集
 ├── foundations/                     # Agent 全栈基础知识专栏
 ├── archive/course-v0/               # 旧版九章讲义，仅供迁移参考
 ├── .vitepress/                      # 课程站点配置与主题
@@ -93,7 +93,6 @@ Eval、安全与治理贯穿七章，不等到课程末尾再集中补齐。
 2. 按顺序完成七章核心课程与 M1-M7。
 3. 完成一个综合业务项目。
 4. 整理架构、运行证据、评测结果、部署说明和失败复盘。
-5. 根据个人方向选择进阶或选修专题。
 
 ## 面向人群
 
@@ -131,5 +130,5 @@ npm run format:check
 
 - 章节按能力依赖组织，不按产品热点堆叠。
 - 每章围绕一个可运行、可验收的项目里程碑收束。
-- 核心内容讲稳定原理，变化较快的协议进入进阶或选修专题。
+- 核心内容讲稳定原理，变化较快的协议不阻塞主线学习。
 - 原理、最小实现、工程增强、失败演练、Eval 对比和里程碑评审形成统一教学闭环。

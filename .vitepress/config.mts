@@ -265,14 +265,6 @@ const courseSidebar = [
     text: "综合交付",
     items: [{ text: "综合项目与作品集", link: "/course/capstone/" }],
   },
-  {
-    text: "扩展学习",
-    collapsed: true,
-    items: [
-      { text: "进阶专题", link: "/course/advanced/" },
-      { text: "选修专题", link: "/course/electives/" },
-    ],
-  },
 ];
 
 const foundationSidebar = [
@@ -282,20 +274,6 @@ const foundationSidebar = [
       { text: "专栏目录", link: "/foundations/" },
       { text: "AI 协议", link: "/foundations/ai-protocols" },
     ],
-  },
-];
-
-const advancedSidebar = [
-  {
-    text: "进阶课程",
-    items: [{ text: "课程目录", link: "/course/advanced/" }],
-  },
-];
-
-const electivesSidebar = [
-  {
-    text: "选修课程",
-    items: [{ text: "课程目录", link: "/course/electives/" }],
   },
 ];
 
@@ -324,8 +302,6 @@ export default defineConfig({
     nav: [
       { text: "课程说明", link: "/about" },
       { text: "核心课程", link: "/course/" },
-      { text: "进阶课程", link: "/course/advanced/" },
-      { text: "选修课程", link: "/course/electives/" },
       { text: "基础知识点", link: "/foundations/" },
       {
         text: "仓库代码",
@@ -342,8 +318,6 @@ export default defineConfig({
       },
     ],
     sidebar: {
-      "/course/advanced/": advancedSidebar,
-      "/course/electives/": electivesSidebar,
       "/course/": courseSidebar,
       "/foundations/": foundationSidebar,
     },

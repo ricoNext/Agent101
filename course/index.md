@@ -1,13 +1,12 @@
 # 课程总览
 
-AI Agent 101 以一个持续演进的 **Agent Engineering Platform** 为工程主线。按能力依赖组织为“七章核心课程 + 综合项目 + 进阶专题 + 选修专题”。
+AI Agent 101 以一个持续演进的 **Agent Engineering Platform** 为工程主线。按能力依赖组织为“七章核心课程 + 综合项目”。
 
 ## 学习路径
 
 1. 依次完成七章核心课程，每章交付一个可验收的项目里程碑。
 2. 在企业级深度研究平台与软件工程 Agent / 软件工厂中选择一个综合项目。
 3. 整理平台、业务项目、评测报告与工程文档，完成作品集和答辩。
-4. 根据个人方向补充进阶与选修专题，不让变化较快的协议阻塞主线学习。
 
 ## 更新进度
 
@@ -17,17 +16,13 @@ AI Agent 101 以一个持续演进的 **Agent Engineering Platform** 为工程�
 | --- | --- | --- |
 | [第一章 · LLM Gateway](./core/chapter-01-llm-gateway/) | 已完成 | 已重构为 15 节课，讲义已完成 |
 | [第二章 · Tool Runtime / MCP](./core/chapter-02-tool-runtime-mcp/) | 已完成 | 已重构为 14 节课，讲义已完成 |
-| [第三章 · Agent Loop / Codebase Agent](./core/chapter-03-agent-loop-codebase-agent/) | 进行中 | 23 节核心课与 1 节选修课已设计，第 1–11 课讲义已完成 |
+| [第三章 · Agent Loop / Codebase Agent](./core/chapter-03-agent-loop-codebase-agent/) | 进行中 | 23 节核心课与 1 节选修课已设计，第 1–12 课讲义已完成 |
 | [第四章 · Context / Memory / RAG](./core/chapter-04-context-memory-codebase-rag/) | 课程已规划 | 10 节课已设计，讲义内容待编写 |
 | [第五章 · Multi-Agent / Skill](./core/chapter-05-multi-agent-skills/) | 课程已规划 | 12 节课已设计，讲义内容待编写 |
 | [第六章 · Agent Eval](./core/chapter-06-agent-eval/) | 仅大纲 | 章节目标与模块已定，课次待设计 |
 | [第七章 · 生产治理](./core/chapter-07-production-governance/) | 仅大纲 | 章节目标与模块已定，课次待设计 |
 | [综合项目](./capstone/) | 仅大纲 | 方向与作品集要求已定，项目讲义待写 |
-| [进阶专题](./advanced/) | 仅大纲 | 专题目录待展开 |
-| [选修专题](./electives/) | 仅大纲 | 专题目录待展开 |
 | [基础知识专栏](../foundations/) | 进行中 | 已发布 1 篇（AI 协议） |
-
-
 
 ## 核心课程
 
@@ -48,8 +43,6 @@ AI Agent 101 以一个持续演进的 **Agent Engineering Platform** 为工程�
 
 - [核心课程](./core/)：建立完整能力链，需按顺序学习。
 - [综合项目与作品集](./capstone/)：选择真实业务方向，完成最终交付。
-- [进阶专题](./advanced/)：扩展 A2A、Coding Agent 工作流、在线 Eval 等工程能力。
-- [选修专题](./electives/)：覆盖 ACP、AG-UI、远程 Sandbox、Kubernetes 与法规概览等主题。
 - [基础知识专栏](../foundations/)：补充会在主线中反复使用的概念，不占核心课时。
 
 ## 统一完成标准
