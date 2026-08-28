@@ -2,7 +2,7 @@
 
 > 所属章节：[第一章：LLM API、Prompt、Structured Output 与 Gateway](./index.md)  
 > 上一课：[第 4 课：用 Provider 抽象隔离模型服务](./lesson-04-provider-abstraction-mock.md)  
-> 下一课：[第 6 课：管理 Prompt 模板与版本](./lesson-06-prompt-management.md)  
+> 下一课：[第 6 课：将 Prompt 纳入调用契约：模板、变量与版本](./lesson-06-prompt-management.md)  
 > [参考代码基线](https://github.com/ricoNext/agent-platform/tree/chapter-03)
 
 ## 一、前言
@@ -11,76 +11,25 @@
 
 今天接着往下讲：把 Mock 换成真实模型服务。
 
-## 二、明确本课的协议边界
+## 二、明确本课的实现边界
 
-如果你想了解 OpenAI、Anthropic、Gemini、MCP 和 A2A 的区别，先阅读基础知识专栏：
+第 3 课已经定义了 Gateway 的内部调用协议、生成参数、用量字段、错误分层和能力矩阵。本课不再重复解释这些概念，而是把它们落到一个真实的 Provider Adapter 上。
 
-- [同一个模型，为什么有多种 API？](/foundations/ai-protocols)
+本课只关注 OpenAI-compatible Chat Completions 的工程实现。它在当前模型服务生态中兼容面较广，足以演示配置切换、请求映射、响应归一化和流式读取。后续接入其他原生协议时，沿用同一个 `ModelProvider` 接口，新增独立 Adapter 即可。
 
-本课只关注 OpenAI-compatible Chat Completions 的工程实现。它在当前模型服务生态中兼容面较广，足以演示 Provider 抽象、流式响应和配置切换。
-
-后续接入其他原生协议时，可以沿用同一个 `ModelProvider` 接口，为每种协议增加独立实现。
-
-### 2.1 Chat Completions 与 Responses 类 API
-
-模型 API 的名字很多，但一次调用都可以拆成四层：
-
-| 层次 | Chat Completions 常见字段 | Responses 类 API 常见字段 | Gateway 内部协议 |
-| --- | --- | --- | --- |
-| 输入 | `messages` | `input`、instructions | `ChatMessage[]` |
-| 生成参数 | `temperature`、`top_p`、`max_tokens` | 同类参数，字段位置可能不同 | `GenerationConfig` |
-| 文本结果 | `choices[0].message.content` | `output` 中的内容项 | `ProviderResult.text` |
-| 使用量 | `usage.prompt_tokens` 等 | `usage.input_tokens` 等 | `input_tokens`、`output_tokens` |
-
-Chat Completions 以消息数组为中心，适合演示对话和兼容协议。Responses 类 API 通常把文本、图片、工具结果等统一为内容项，并可能提供不同的结构化输出、状态和用量字段。两者没有必要在业务层同时出现：差异应留在 Provider Adapter 内部。
-
-本课程对外提供的是 Gateway 自己的 `/v1/chat` 协议，上游 Adapter 才调用 `/chat/completions`。所以这里所说的 “OpenAI-compatible” 指上游接入能力，不承诺 Gateway 对外逐字段复刻 OpenAI API。如果产品确实需要兼容 OpenAI SDK，应额外增加协议转换路由，而不是让内部业务类型被外部协议绑死。
-
-### 2.2 生成参数不是装饰项
-
-- `temperature` 控制采样随机性。需要稳定分类或结构化输出时通常使用较低值；创意任务可以适当提高。
-- `top_p` 控制候选 Token 的累计概率范围。它与 `temperature` 都会影响随机性，基线实验中通常固定一个、只调整另一个。
-- `max_output_tokens` 是 Gateway 的统一名称，用于限制最大输出规模。Adapter 再把它映射成厂商使用的 `max_tokens`、`max_completion_tokens` 或其他字段。
-
-这些参数必须进入请求契约、调用记录和基线报告。只把参数写在 Prompt 或报告备注里，无法复现实验。
-
-### 2.3 Token、Context Window、Latency 与 Cost
-
-一次调用至少受四个预算约束：
+本课的边界可以概括为：
 
 ```text
-输入 Token + 预留输出 Token <= 模型 Context Window
-总延迟 = 排队 + 首 Token 延迟 + 生成耗时 + 网络耗时
-估算成本 = 输入 Token 费用 + 输出 Token 费用
+Gateway 内部对象
+  ChatMessage / GenerationConfig / ProviderResult
+          ↓ 由 Adapter 映射
+上游请求与响应
+  messages / max_tokens / choices / usage / SSE chunks
 ```
 
-字符数不等于 Token 数。中文、英文、代码和不同 tokenizer 的比例都不同；计费只能使用 Provider 返回的真实 usage，缺失时记录为 `null`。发送请求前还应为 System Prompt、用户输入、Few-shot 和输出预留分别记账，不能等 Provider 返回“上下文过长”才处理。
+上层业务只依赖内部对象，不应读取 `choices[0]`、`prompt_tokens` 或某家 SDK 的响应类型。Adapter 负责处理字段名称、默认值、流式帧格式和异常转换。
 
-### 2.4 内容错误与传输错误是两类问题
-
-HTTP 200 只说明 Provider 完成了请求，不说明内容可用。Gateway 至少区分：
-
-- 传输错误：超时、网络失败、429、5xx；
-- 协议错误：返回体缺字段、流式帧损坏、usage 类型错误；
-- 内容错误：拒答、空内容、内容安全拦截、Structured Output 不符合 Schema；
-- 业务质量错误：答案与任务目标不符，由 Golden Tasks 和后续评测发现。
-
-前三类进入稳定错误协议，最后一类不能靠盲目重试解决。
-
-### 2.5 用能力矩阵选择模型
-
-模型路由不能只保存一个模型名称。至少维护下面这些可验证属性：
-
-| 能力 | `fast` 路由 | `balanced` 路由 | 记录来源 |
-| --- | --- | --- | --- |
-| Context Window | 较小 | 较大 | Provider 文档与实测 |
-| Structured Output | 可选 | 必须支持 | 能力探测任务 |
-| Streaming usage | 可能缺失 | 优先支持 | Adapter 验证 |
-| P95 延迟 | 较低 | 中等 | 基线报告 |
-| 单次估算成本 | 较低 | 中等 | 价格快照 |
-| 数据区域与合规 | 按部署填写 | 按部署填写 | 配置与合同 |
-
-能力矩阵描述“这个模型能做什么”，第七课的逻辑路由描述“当前任务应该使用哪个模型”。模型升级后先更新矩阵和基线，再调整路由，不能只替换字符串。
+如果你想复习不同模型 API 的概念差异，可以回看第 3 课或阅读基础知识专栏：[同一个模型，为什么有多种 API？](/foundations/ai-protocols)。
 
 不过，在接入之前，有三件事需要先想清楚。
 
@@ -401,7 +350,7 @@ class OpenAICompatibleProvider:
 
 真实服务可能有不同字段。所以切换 Provider 时，建议先用一条普通请求检查响应，再按需扩展适配器。
 
-流式响应偶尔会出现不含 `choices` 的统计或控制事件，因此先检查列表是否为空，再读取第一个增量。JSON 解析失败、超时和 HTTP 错误都不应该在 Provider 中伪装成正常文本；它们会继续抛给上层，由第六、七课的错误边界转换为明确失败。
+流式响应偶尔会出现不含 `choices` 的统计或控制事件，因此先检查列表是否为空，再读取第一个增量。JSON 解析失败、超时和 HTTP 错误都不应该在 Provider 中伪装成正常文本；它们会继续抛给上层，由第 7～9 课的结构化输出和可靠性边界转换为明确失败。
 
 ## 五、第三步：根据配置创建 Provider
 
@@ -573,6 +522,23 @@ uvicorn app.main:app --reload --port 8000
 
 需要强调一下：不要把真实 Key 粘贴到截图、代码或 Git 提交中。
 
+到这里，Provider 已经可以替换，`ChatService` 也可以稳定调用 Mock 或真实模型。但当前 `/v1/chat` 仍然要求调用方自己提交完整的 `messages`。一旦开始实现摘要、分类等业务任务，Prompt 很容易直接写进路由函数：
+
+```python
+messages = [
+    ChatMessage(
+        role="system",
+        content="你是技术文档摘要助手，请返回标题、摘要和关键词。",
+    ),
+    ChatMessage(
+        role="user",
+        content=f"请总结下面的原文：\n\n{request.text}",
+    ),
+]
+```
+
+这段代码可以运行，但它留下了三个工程问题：Prompt 可能在多个业务函数中复制，变量缺少调用前校验，调用记录也无法知道这次请求使用的是哪一版 Prompt。下一课会把这段临时字符串改造成带稳定 ID、变量契约和版本字段的 Prompt 资产；第 7 课再让同一个 Prompt 驱动结构化摘要接口。
+
 ## 八、验证 `/v1/chat`
 
 服务启动后，先确认 `/health` 正常：
@@ -658,17 +624,17 @@ curl -i \
 - `.env` 已加入 `.gitignore`，本地可用 `MODEL_PROVIDER=mock` 继续开发
 - `create_provider` 能按配置返回 Mock 或 OpenAI-compatible Provider
 - `/health` 能返回当前 `provider`
-- 能解释 Chat Completions、Responses 类 API 与 Gateway 内部协议的边界
-- `temperature`、`top_p` 和 `max_output_tokens` 已进入统一请求契约并由 Adapter 映射
-- 能判断输入与预留输出是否超过 Context Window
-- 已记录当前路由的模型能力矩阵，而不是只保存模型名称
+- `ChatMessage`、`GenerationConfig` 能映射为上游请求体，且不把上游字段泄露到业务层
+- `ProviderResult` 能从 `choices` 和 `usage` 中得到统一结果，usage 缺失时保留为 `null`
+- 流式响应能识别 `[DONE]`，忽略控制帧，并只产出文本增量
+- 上游字段差异（例如 `max_tokens` 与 `max_completion_tokens`）被限制在 Adapter 内
 - Provider 超时、HTTP 错误和非法响应会返回脱敏的 `502`
 - `tests/test_health.py` 已同步断言 `provider`，`pytest -q` 通过
 - 有 Key 时，改环境变量即可切到真实模型，无需改业务代码
 
 ## 十、小结
 
-今天就讲到这里。这一课明确了模型 API 的协议边界和预算参数，用 `.env` 管理模型配置，实现 OpenAI-compatible Provider，并用工厂函数按配置选择 Mock 或真实服务。
+今天就讲到这里。这一课把第 3 课定义的内部调用协议接到了真实服务：用 `.env` 管理配置，把内部请求映射为 OpenAI-compatible 请求，再将普通响应和 SSE 响应归一化为 Provider 结果，并用工厂函数按配置选择 Mock 或真实服务。
 
 改环境变量就能切换 Provider，业务代码一行不用动。下一课会先把 Prompt 从业务代码中抽离，建立模板、变量和版本契约。
 

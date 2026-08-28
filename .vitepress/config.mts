@@ -273,6 +273,10 @@ const foundationSidebar = [
     items: [
       { text: "专栏目录", link: "/foundations/" },
       { text: "AI 协议", link: "/foundations/ai-protocols" },
+      {
+        text: "项目中的 Python 知识",
+        link: "/foundations/python-in-project",
+      },
     ],
   },
 ];

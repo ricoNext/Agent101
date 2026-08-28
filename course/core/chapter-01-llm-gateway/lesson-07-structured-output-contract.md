@@ -1,13 +1,13 @@
 # 第 7 课：定义 Structured Output 契约
 
 > 所属章节：[第一章：LLM API、Prompt、Structured Output 与 Gateway](./index.md)  
-> 上一课：[第 6 课：管理 Prompt 模板与版本](./lesson-06-prompt-management.md)  
+> 上一课：[第 6 课：将 Prompt 纳入调用契约：模板、变量与版本](./lesson-06-prompt-management.md)  
 > 下一课：[第 8 课：处理 Structured Output 失败与 Schema 演进](./lesson-08-structured-output-recovery.md)  
 > [参考代码基线](https://github.com/ricoNext/agent-platform/tree/chapter-05)
 
 ## 一、前言
 
-前两课，我们已经接入 OpenAI-compatible Provider，并把 Prompt 从业务代码中独立出来。
+第 5 课接入了 OpenAI-compatible Provider，第 6 课把摘要 Prompt 变成了带 ID、版本和变量校验的调用契约。现在让这个契约第一次进入真实业务链路：用它生成摘要，再用 Pydantic Schema 判断结果是否可被程序消费。
 
 改一下环境变量，就能在 Mock 和真实模型之间切换；`POST /v1/chat` 也能返回一段普通文本。
 
@@ -607,7 +607,7 @@ async def summarize(self, request: SummaryRequest) -> SummaryResponse:
     latency_ms = int((time.perf_counter() - started_at) * 1000)
 
     # call.retry_count 本课先留在 StructuredSummaryCall 中
-    # 第七课再写入 ModelCallRecord
+    # 第 10 课再写入 ModelCallRecord
     return SummaryResponse(
         run_id=str(uuid.uuid4()),
         result=call.result,
@@ -622,7 +622,7 @@ async def summarize(self, request: SummaryRequest) -> SummaryResponse:
 
 上面代码中，`render()` 和组装 `SummaryResponse` 都不用改。变的只是中间两步：生成与解析。
 
-`retry_count` 本课先留在 `StructuredSummaryCall` 里。第七课再把它接到 `ModelCallRecord`。本课不必新建观测模型。
+`retry_count` 本课先留在 `StructuredSummaryCall` 里。第 10 课再把它接到 `ModelCallRecord`。本课不必新建观测模型。
 
 ## 九、实现预览：定义重试耗尽后的状态
 

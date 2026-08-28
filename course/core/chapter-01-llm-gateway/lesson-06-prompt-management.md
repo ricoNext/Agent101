@@ -1,30 +1,46 @@
-# 第 6 课：管理 Prompt 模板与版本
+# 第 6 课：将 Prompt 纳入调用契约：模板、变量与版本
 
 > 所属章节：[第一章：LLM API、Prompt、Structured Output 与 Gateway](./index.md)  
 > 上一课：[第 5 课：接入 OpenAI-compatible 模型服务](./lesson-05-openai-compatible-provider.md)  
-> 下一课：[第 7 课：定义 Structured Output 契约](./lesson-07-structured-output-contract.md)
+> 下一课：[第 7 课：定义 Structured Output 契约](./lesson-07-structured-output-contract.md)  
 > [参考代码基线](https://github.com/ricoNext/agent-platform/tree/chapter-04)
 
 
 ## 一、本课要解决的问题
 
-上一课已经能调用真实模型。如果现在直接把一段 Prompt 写进路由函数，功能也能跑起来，但很快会出现三个问题：
+上一课已经能调用真实模型，但业务层仍然需要自己组装完整的 `messages`。这在演示聊天时没有问题，一旦开始实现摘要、分类等固定任务，Prompt 就很容易散落在路由和服务函数里。
+
+先看一个可以运行、但不适合长期维护的临时写法：
+
+```python
+messages = [
+    ChatMessage(
+        role="system",
+        content="你是技术文档摘要助手，请返回标题、摘要和关键词。",
+    ),
+    ChatMessage(
+        role="user",
+        content=f"请总结下面的原文：\n\n{request.text}",
+    ),
+]
+```
+
+它很快会出现三个问题：
 
 1. 相同任务在不同位置复制出多个 Prompt，修改时容易漏掉。
 2. Prompt 依赖哪些变量没有契约，运行时才发现字段缺失。
 3. 输出变化后无法回答“当时使用的是哪一版 Prompt”。
 
-Prompt 是系统行为的一部分，应像 API Schema 和代码一样拥有名称、版本、输入约束和变更记录。本课会把 Prompt 从字符串升级为工程资产。
+Prompt 是系统行为的一部分，应像 API Schema 和代码一样拥有名称、版本、输入约束和变更记录。本课不做独立的 Prompt 管理后台，而是先建立一个能被业务代码直接调用、被模型调用记录追踪的 Prompt 契约。下一课会立即消费这个契约，生成结构化摘要。
 
 完成本课后，你将能够：
 
-- 拆分 System、User、Context 和输出约束
-- 使用模板变量而不是字符串拼接
-- 在渲染前校验缺失和多余变量
-- 为 Prompt 分配稳定 ID 与版本
-- 说明 Chain-of-Thought 与 Self-Consistency 的适用边界
-- 解释 Prompt 注入为什么不能只靠提示词解决
-- 为后续回归评测保留版本字段
+- 将 System、User、Context 和输出约束放入清晰的消息边界
+- 使用模板变量和 Registry 替代业务代码中的字符串拼接
+- 在模型调用前校验缺失和多余变量
+- 为 Prompt 分配稳定 ID 与版本，并写入调用追踪所需字段
+- 说明 Prompt 不能替代 Schema、权限和敏感信息检查
+- 了解 Few-shot、CoT 与 Self-Consistency 的适用边界
 
 ## 二、Prompt 的五个组成部分
 
@@ -48,7 +64,7 @@ Prompt 是系统行为的一部分，应像 API Schema 和代码一样拥有名�
 
 ### 2.5 输出格式
 
-输出格式规定调用方需要的结构。第六课会使用 Pydantic 对结构做真正校验；Prompt 里的格式说明只是引导，不是可靠保证。
+输出格式规定调用方需要的结构。第 7 课会使用 Pydantic 对结构做真正校验；Prompt 里的格式说明只是引导，不是可靠保证。
 
 ## 三、System Prompt 的职责边界
 
@@ -196,7 +212,7 @@ Registry 让业务代码通过稳定的 `prompt_id + version` 获取模板。以
 
 ## 六、在服务层使用模板
 
-第六课会正式实现摘要接口。现在先理解调用方式：
+第 7 课会正式实现摘要接口。现在先理解调用方式：
 
 ```python
 from app.prompts import prompt_registry

@@ -33,7 +33,7 @@
 | 3 | [理解 LLM API 与模型调用边界](./lesson-03-llm-api-model-boundaries.md) | 内部调用协议、生成参数、Token、成本、错误分层和能力矩阵 |
 | 4 | [用 Provider 抽象隔离模型服务](./lesson-04-provider-abstraction-mock.md) | Provider 接口、请求响应标准化和 Mock Provider |
 | 5 | [接入 OpenAI-compatible 模型服务](./lesson-05-openai-compatible-provider.md) | 真实模型配置、适配器、Provider 工厂和能力差异 |
-| 6 | [管理 Prompt 模板与版本](./lesson-06-prompt-management.md) | Prompt Registry、变量校验、Few-shot、CoT 边界和版本字段 |
+| 6 | [将 Prompt 纳入调用契约：模板、变量与版本](./lesson-06-prompt-management.md) | Prompt Registry、变量校验、版本字段与回归追踪 |
 | 7 | [定义 Structured Output 契约](./lesson-07-structured-output-contract.md) | 业务 Schema、解析校验、结构化摘要和契约测试 |
 | 8 | [处理 Structured Output 失败与 Schema 演进](./lesson-08-structured-output-recovery.md) | 错误分类、有限纠错、恢复协议、兼容规则和失败样本 |
 | 9 | [实现调用可靠性与模型路由](./lesson-09-reliability-routing.md) | 错误语义、限流、重试、退避、逻辑模型和 fallback |
